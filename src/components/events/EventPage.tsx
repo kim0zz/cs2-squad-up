@@ -70,6 +70,9 @@ export function EventPage() {
     try {
       localStorage.setItem(NICKNAME_KEY, nickname.trim());
       const updated = await upsertParticipant(event, participants, nickname, chosen);
+      // Refresh local list (no realtime in MVP)
+      const fresh = await getParticipants(event.id);
+      setParticipants(fresh);
       const msg =
         updated.response_status === "waitlist"
           ? "Komplet — jesteś na rezerwie"
