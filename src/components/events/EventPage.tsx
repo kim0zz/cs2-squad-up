@@ -6,9 +6,14 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { getEventBySlug, getParticipants, upsertParticipant } from "@/lib/eventApi";
-import { countPlaying, NICKNAME_KEY, spotsLeft } from "@/lib/eventRules";
+import {
+  countPlaying,
+  getEventBySlug,
+  getParticipants,
+  NICKNAME_KEY,
+  spotsLeft,
+  upsertParticipant,
+} from "@/lib/eventRules";
 import type { EventRow, ParticipantRow, ResponseStatus } from "@/types/event";
 import { ParticipantLists } from "./ParticipantLists";
 import { Calendar, Copy, Gamepad2, MessageSquare, Users } from "lucide-react";
@@ -38,20 +43,6 @@ export function EventPage() {
         const ps = await getParticipants(ev.id);
         if (!active) return;
         setParticipants(ps);
-
-        // Realtime updates
-        const channel = supabase
-          .channel(`event-${ev.id}`)
-          .on(
-            "postgres_changes",
-            { event: "*", schema: "public", table: "participants", filter: `event_id=eq.${ev.id}` },
-            async () => {
-              const fresh = await getParticipants(ev.id);
-              setParticipants(fresh);
-            }
-          )
-          .subscribe();
-        return () => { supabase.removeChannel(channel); };
       } finally {
         if (active) setLoading(false);
       }
@@ -79,6 +70,9 @@ export function EventPage() {
     try {
       localStorage.setItem(NICKNAME_KEY, nickname.trim());
       const updated = await upsertParticipant(event, participants, nickname, chosen);
+      // Refresh local list (no realtime in MVP)
+      const fresh = await getParticipants(event.id);
+      setParticipants(fresh);
       const msg =
         updated.response_status === "waitlist"
           ? "Komplet — jesteś na rezerwie"
