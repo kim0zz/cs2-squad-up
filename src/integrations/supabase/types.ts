@@ -14,7 +14,89 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      events: {
+        Row: {
+          activity_type: string
+          created_at: string
+          cs_mode: string
+          description: string | null
+          discord_info: string
+          id: string
+          max_players: number
+          public_slug: string
+          starts_at: string
+          status: string
+          title: string
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          activity_type?: string
+          created_at?: string
+          cs_mode: string
+          description?: string | null
+          discord_info: string
+          id?: string
+          max_players: number
+          public_slug: string
+          starts_at: string
+          status?: string
+          title: string
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string
+          cs_mode?: string
+          description?: string | null
+          discord_info?: string
+          id?: string
+          max_players?: number
+          public_slug?: string
+          starts_at?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: []
+      }
+      participants: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          nickname: string
+          response_status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          nickname: string
+          response_status: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          nickname?: string
+          response_status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participants_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
