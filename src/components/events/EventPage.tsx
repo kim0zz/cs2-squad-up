@@ -127,7 +127,7 @@ export function EventPage() {
   }
   if (notFound || !event) {
     return (
-      <Card className="p-8 text-center bg-gradient-card border-border/60">
+      <Card className="p-8 text-center bg-gradient-card border-border/80">
         <h1 className="font-display text-3xl font-bold mb-2">Zbiórka nie istnieje</h1>
         <p className="text-muted-foreground">Sprawdź link i spróbuj jeszcze raz.</p>
       </Card>
@@ -143,13 +143,13 @@ export function EventPage() {
     <div className="space-y-6">
       <Link
         to="/"
-        className="inline-flex items-center rounded-md border border-border/75 bg-secondary/35 px-3 py-2 text-sm font-display uppercase tracking-wide text-foreground transition-colors hover:border-primary/40 hover:bg-secondary/70"
+        className="inline-flex items-center rounded-md border border-border/80 bg-secondary/45 px-3 py-2 text-sm font-display uppercase tracking-wide text-foreground transition-colors hover:border-primary/50 hover:bg-secondary/75"
       >
         ← Utwórz kolejną zbiórkę
       </Link>
 
       {/* Header */}
-      <Card className="bg-gradient-card border-border/70 shadow-card p-6 sm:p-8">
+      <Card className="bg-gradient-card border-border/80 p-6 sm:p-8">
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex-1 min-w-0">
             <Badge variant={MODE_BADGE_VARIANT[event.cs_mode]} className="font-display uppercase tracking-wider mb-3">
@@ -162,6 +162,7 @@ export function EventPage() {
               <Calendar className="size-4" />
               <span className="capitalize">{dateStr}</span>
             </div>
+            <div className="mt-4 h-px w-28 bg-gradient-to-r from-primary/65 to-transparent" />
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <Button variant="outline" onClick={copyInvitation} className="gap-2 font-display uppercase tracking-wide">
@@ -176,7 +177,7 @@ export function EventPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
-          <div className="rounded-md border border-border/60 bg-secondary/45 p-4">
+          <div className="rounded-lg border border-border/75 bg-secondary/55 p-4">
             <div className="flex items-center gap-2 text-xs text-muted-foreground uppercase font-display tracking-wider mb-1">
               <Users className="size-3.5" /> Skład
             </div>
@@ -187,15 +188,15 @@ export function EventPage() {
               <span className="text-muted-foreground">/{event.max_players}</span>
             </div>
           </div>
-          <div className="rounded-md border border-border/60 bg-secondary/45 p-4">
+          <div className="rounded-lg border border-border/75 bg-secondary/55 p-4">
             <div className="flex items-center gap-2 text-xs text-muted-foreground uppercase font-display tracking-wider mb-1">
               <Gamepad2 className="size-3.5" /> Brakuje
             </div>
-            <div className="font-display text-2xl font-bold">
+            <div className="font-display text-2xl font-bold text-primary">
               {left > 0 ? `${left} ${left === 1 ? "gracza" : "graczy"}` : "Komplet ✓"}
             </div>
           </div>
-          <div className="rounded-md border border-border/60 bg-secondary/45 p-4 sm:col-span-1 col-span-1">
+          <div className="rounded-lg border border-border/75 bg-secondary/55 p-4 sm:col-span-1 col-span-1">
             <div className="flex items-center gap-2 text-xs text-muted-foreground uppercase font-display tracking-wider mb-1">
               <MessageSquare className="size-3.5" /> Discord
             </div>
@@ -213,7 +214,7 @@ export function EventPage() {
       </Card>
 
       {/* Join */}
-      <Card className="bg-gradient-card border-border/70 shadow-card p-6">
+      <Card className="bg-gradient-card border-border/80 p-6">
         <h2 className="font-display text-xl font-bold uppercase tracking-wide mb-4">
           Dodaj / zaktualizuj gracza
         </h2>
@@ -228,7 +229,7 @@ export function EventPage() {
             <Button
               onClick={() => handleStatus("playing")}
               disabled={!!submitting}
-              className="bg-gradient-primary text-primary-foreground hover:opacity-90 font-display uppercase tracking-wider"
+              className="font-display uppercase tracking-wider"
             >
               Gram
             </Button>

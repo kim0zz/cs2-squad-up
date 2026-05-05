@@ -37,9 +37,9 @@ const Index = () => {
   return (
     <main className="min-h-screen">
       <div className="container max-w-2xl px-4 py-6 sm:py-10">
-        <header className="text-center mb-6 sm:mb-7">
+        <header className="text-center mb-7 sm:mb-8">
           <div className="inline-flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
-            <div className="size-11 shrink-0 rounded-lg bg-gradient-primary grid place-items-center shadow-glow ring-1 ring-primary/35 sm:size-12">
+            <div className="size-11 shrink-0 rounded-lg bg-gradient-primary grid place-items-center shadow-glow ring-1 ring-primary/50 sm:size-12">
               <Crosshair className="size-5 text-primary-foreground sm:size-6" strokeWidth={2.5} />
             </div>
             <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
@@ -49,6 +49,7 @@ const Index = () => {
           <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto mt-3 leading-relaxed">
             Nadchodzące zbiórki CS2 — jednym kliknięciem dołączasz. Utwórz nową, gdy potrzebujesz.
           </p>
+          <div className="mx-auto mt-4 h-px w-36 bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
         </header>
 
         <div className="flex justify-center mb-6 sm:mb-8">

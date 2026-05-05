@@ -79,10 +79,10 @@ export function CreateEventForm() {
   };
 
   return (
-    <Card className="bg-gradient-card border-border/70 shadow-card p-6 sm:p-8">
+    <Card className="bg-gradient-card border-border/80 p-6 sm:p-8">
       <form onSubmit={onSubmit} className="space-y-6">
         <div className="flex items-center gap-3 mb-2">
-          <div className="size-10 rounded-md bg-gradient-primary grid place-items-center shadow-glow ring-1 ring-primary/35">
+          <div className="size-10 rounded-md bg-gradient-primary grid place-items-center shadow-glow ring-1 ring-primary/50">
             <Target className="size-5 text-primary-foreground" strokeWidth={2.5} />
           </div>
           <div>
@@ -143,11 +143,11 @@ export function CreateEventForm() {
             onValueChange={(v) => v && setCsMode(v as CsMode)}
             className="justify-start gap-2"
           >
-            <ToggleGroupItem value="faceit" className="px-4 font-display uppercase border border-orange-400/45 data-[state=on]:bg-orange-500/20 data-[state=on]:text-orange-200 data-[state=on]:border-orange-300/70">Faceit</ToggleGroupItem>
-            <ToggleGroupItem value="premier" className="px-4 font-display uppercase border border-cyan-400/45 data-[state=on]:bg-cyan-500/20 data-[state=on]:text-cyan-200 data-[state=on]:border-cyan-300/70">Premier</ToggleGroupItem>
-            <ToggleGroupItem value="mix10" className="px-4 font-display uppercase border border-lime-400/45 data-[state=on]:bg-lime-500/20 data-[state=on]:text-lime-200 data-[state=on]:border-lime-300/70">MIX10</ToggleGroupItem>
+            <ToggleGroupItem value="faceit" className="px-4 font-display uppercase border border-lime-400/45 data-[state=on]:bg-lime-500/22 data-[state=on]:text-lime-100 data-[state=on]:border-lime-300/70">Faceit</ToggleGroupItem>
+            <ToggleGroupItem value="premier" className="px-4 font-display uppercase border border-slate-300/40 data-[state=on]:bg-slate-200/20 data-[state=on]:text-slate-50 data-[state=on]:border-slate-200/65">Premier</ToggleGroupItem>
+            <ToggleGroupItem value="mix10" className="px-4 font-display uppercase border border-lime-300/55 data-[state=on]:bg-lime-400/28 data-[state=on]:text-lime-50 data-[state=on]:border-lime-200/75">MIX10</ToggleGroupItem>
           </ToggleGroup>
-          <p className="text-sm text-muted-foreground">{helperText}</p>
+          <p className="text-sm text-muted-foreground/95">{helperText}</p>
         </div>
 
         <div className="space-y-2">

@@ -4,30 +4,30 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
 
-/* Zbieraj się! — tactical CS2-inspired dark theme */
+/* Zbieraj się! — branded dark/lime competitive theme */
 @layer base {
   :root {
-    --background: 224 28% 7%;
-    --foreground: 210 30% 97%;
+    --background: 223 28% 5%;
+    --foreground: 210 24% 97%;
 
-    --card: 222 24% 11%;
-    --card-foreground: 210 30% 97%;
+    --card: 220 30% 10%;
+    --card-foreground: 210 24% 97%;
 
-    --popover: 222 24% 11%;
-    --popover-foreground: 210 30% 97%;
+    --popover: 220 30% 10%;
+    --popover-foreground: 210 24% 97%;
 
-    --primary: 28 100% 56%;
-    --primary-foreground: 222 28% 8%;
-    --primary-glow: 30 100% 64%;
+    --primary: 72 90% 50%;
+    --primary-foreground: 225 34% 8%;
+    --primary-glow: 75 95% 60%;
 
-    --secondary: 222 20% 16%;
-    --secondary-foreground: 210 30% 97%;
+    --secondary: 220 23% 14%;
+    --secondary-foreground: 210 24% 97%;
 
-    --muted: 222 18% 15%;
-    --muted-foreground: 220 12% 70%;
+    --muted: 221 20% 12%;
+    --muted-foreground: 219 16% 66%;
 
-    --accent: 195 90% 52%;
-    --accent-foreground: 222 28% 8%;
+    --accent: 210 26% 95%;
+    --accent-foreground: 225 34% 8%;
 
     --destructive: 0 75% 55%;
     --destructive-foreground: 210 30% 97%;
@@ -36,30 +36,30 @@
     --success-foreground: 220 25% 8%;
 
     --warning: 45 95% 55%;
-    --warning-foreground: 222 28% 8%;
+    --warning-foreground: 225 34% 8%;
 
-    --border: 222 16% 24%;
-    --input: 222 16% 24%;
-    --ring: 28 100% 56%;
+    --border: 220 22% 18%;
+    --input: 220 22% 18%;
+    --ring: 72 90% 50%;
 
     --radius: 0.625rem;
 
-    --gradient-primary: linear-gradient(135deg, hsl(28 100% 56%), hsl(16 95% 52%));
-    --gradient-hero: radial-gradient(ellipse at top, hsl(28 100% 20% / 0.42), transparent 58%),
-                     linear-gradient(180deg, hsl(224 28% 8%), hsl(228 34% 6%));
-    --gradient-card: linear-gradient(180deg, hsl(222 24% 14%), hsl(224 26% 11%));
+    --gradient-primary: linear-gradient(135deg, hsl(72 90% 50%), hsl(77 92% 44%));
+    --gradient-hero: radial-gradient(ellipse at top, hsl(74 100% 22% / 0.24), transparent 56%),
+                     linear-gradient(180deg, hsl(223 28% 6%), hsl(227 32% 4%));
+    --gradient-card: linear-gradient(180deg, hsl(220 28% 13%), hsl(223 32% 10%));
 
-    --shadow-glow: 0 0 36px hsl(28 100% 56% / 0.28);
-    --shadow-card: 0 14px 38px -18px hsl(222 70% 2% / 0.9);
+    --shadow-glow: 0 0 28px hsl(72 90% 50% / 0.23);
+    --shadow-card: 0 16px 34px -20px hsl(222 72% 2% / 0.88);
 
-    --sidebar-background: 224 28% 8%;
-    --sidebar-foreground: 210 30% 97%;
-    --sidebar-primary: 28 100% 56%;
-    --sidebar-primary-foreground: 222 28% 8%;
-    --sidebar-accent: 222 20% 16%;
-    --sidebar-accent-foreground: 210 30% 97%;
-    --sidebar-border: 222 16% 24%;
-    --sidebar-ring: 28 100% 56%;
+    --sidebar-background: 223 28% 6%;
+    --sidebar-foreground: 210 24% 97%;
+    --sidebar-primary: 72 90% 50%;
+    --sidebar-primary-foreground: 225 34% 8%;
+    --sidebar-accent: 220 23% 14%;
+    --sidebar-accent-foreground: 210 24% 97%;
+    --sidebar-border: 220 22% 18%;
+    --sidebar-ring: 72 90% 50%;
   }
 }
 
@@ -89,4 +89,5 @@
   .shadow-glow { box-shadow: var(--shadow-glow); }
   .shadow-card { box-shadow: var(--shadow-card); }
   .surface-elevated { @apply bg-secondary/50 border border-border/70; }
+  .target-outline { @apply border border-primary/40 rounded-xl; }
 }
