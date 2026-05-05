@@ -8,31 +8,62 @@ import { Card } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { toast } from "sonner";
 import { createEvent } from "@/lib/eventRules";
-import type { CsMode, MaxPlayers } from "@/types/event";
+import type { CsMode } from "@/types/event";
 import { Loader2, Target } from "lucide-react";
+
+function formatDateInput(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function addDays(base: Date, days: number): Date {
+  const next = new Date(base);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
+function getNextFriday(base: Date): Date {
+  const day = base.getDay();
+  const daysUntilFriday = (5 - day + 7) % 7;
+  return addDays(base, daysUntilFriday);
+}
 
 export function CreateEventForm() {
   const navigate = useNavigate();
+  const today = new Date();
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
-  const [startsAt, setStartsAt] = useState("");
-  const [maxPlayers, setMaxPlayers] = useState<MaxPlayers>(5);
-  const [csMode, setCsMode] = useState<CsMode>("premier");
+  const [dateValue, setDateValue] = useState(formatDateInput(today));
+  const [timeValue, setTimeValue] = useState("20:00");
+  const [csMode, setCsMode] = useState<CsMode>("faceit");
   const [discordInfo, setDiscordInfo] = useState("");
   const [description, setDescription] = useState("");
+  const helperText = csMode === "mix10" ? "Zbieramy 10 osób" : "Zbieramy 5 osób";
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !startsAt || !discordInfo.trim()) {
+    if (!title.trim() || !dateValue || !timeValue || !discordInfo.trim()) {
       toast.error("Uzupełnij wymagane pola");
       return;
     }
+
+    const startsAtDate = new Date(`${dateValue}T${timeValue}`);
+    if (Number.isNaN(startsAtDate.getTime())) {
+      toast.error("Uzupełnij wymagane pola");
+      return;
+    }
+    if (startsAtDate.getTime() < Date.now()) {
+      toast.error("Nie można utworzyć zbiórki w przeszłości");
+      return;
+    }
+
     setLoading(true);
     try {
       const event = await createEvent({
         title: title.trim(),
-        starts_at: new Date(startsAt).toISOString(),
-        max_players: maxPlayers,
+        starts_at: startsAtDate.toISOString(),
         cs_mode: csMode,
         discord_info: discordInfo.trim(),
         description: description.trim() || undefined,
@@ -48,15 +79,15 @@ export function CreateEventForm() {
   };
 
   return (
-    <Card className="bg-gradient-card border-border/60 shadow-card p-6 sm:p-8">
+    <Card className="bg-gradient-card border-border/70 shadow-card p-6 sm:p-8">
       <form onSubmit={onSubmit} className="space-y-6">
         <div className="flex items-center gap-3 mb-2">
-          <div className="size-10 rounded-md bg-gradient-primary grid place-items-center shadow-glow">
+          <div className="size-10 rounded-md bg-gradient-primary grid place-items-center shadow-glow ring-1 ring-primary/35">
             <Target className="size-5 text-primary-foreground" strokeWidth={2.5} />
           </div>
           <div>
             <h2 className="font-display text-2xl font-bold">Utwórz zbiórkę</h2>
-            <p className="text-sm text-muted-foreground">CS2 — zbierz ekipę w 30 sekund</p>
+            <p className="text-sm text-muted-foreground">Zbieraj się! — zbierz ekipę w 30 sekund</p>
           </div>
         </div>
 
@@ -71,42 +102,52 @@ export function CreateEventForm() {
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="starts_at">Kiedy gramy? *</Label>
+        <div className="space-y-3">
+          <Label>Data *</Label>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" variant="outline" size="sm" className="font-display uppercase tracking-wide" onClick={() => setDateValue(formatDateInput(new Date()))}>
+              Dziś
+            </Button>
+            <Button type="button" variant="outline" size="sm" className="font-display uppercase tracking-wide" onClick={() => setDateValue(formatDateInput(addDays(new Date(), 1)))}>
+              Jutro
+            </Button>
+            <Button type="button" variant="outline" size="sm" className="font-display uppercase tracking-wide" onClick={() => setDateValue(formatDateInput(getNextFriday(new Date())))}>
+              Najbliższy piątek
+            </Button>
+          </div>
           <Input
-            id="starts_at"
-            type="datetime-local"
-            value={startsAt}
-            onChange={(e) => setStartsAt(e.target.value)}
+            id="date"
+            type="date"
+            value={dateValue}
+            onChange={(e) => setDateValue(e.target.value)}
             required
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>Liczba graczy *</Label>
-            <ToggleGroup
-              type="single"
-              value={String(maxPlayers)}
-              onValueChange={(v) => v && setMaxPlayers(Number(v) as MaxPlayers)}
-              className="justify-start"
-            >
-              <ToggleGroupItem value="5" className="px-6 font-display text-lg">5</ToggleGroupItem>
-              <ToggleGroupItem value="10" className="px-6 font-display text-lg">10</ToggleGroupItem>
-            </ToggleGroup>
-          </div>
-          <div className="space-y-2">
-            <Label>Tryb *</Label>
-            <ToggleGroup
-              type="single"
-              value={csMode}
-              onValueChange={(v) => v && setCsMode(v as CsMode)}
-              className="justify-start"
-            >
-              <ToggleGroupItem value="premier" className="px-4 font-display uppercase">Premier</ToggleGroupItem>
-              <ToggleGroupItem value="faceit" className="px-4 font-display uppercase">Faceit</ToggleGroupItem>
-            </ToggleGroup>
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="time">Godzina *</Label>
+          <Input
+            id="time"
+            type="time"
+            value={timeValue}
+            onChange={(e) => setTimeValue(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label>Tryb *</Label>
+          <ToggleGroup
+            type="single"
+            value={csMode}
+            onValueChange={(v) => v && setCsMode(v as CsMode)}
+            className="justify-start gap-2"
+          >
+            <ToggleGroupItem value="faceit" className="px-4 font-display uppercase border border-orange-400/45 data-[state=on]:bg-orange-500/20 data-[state=on]:text-orange-200 data-[state=on]:border-orange-300/70">Faceit</ToggleGroupItem>
+            <ToggleGroupItem value="premier" className="px-4 font-display uppercase border border-cyan-400/45 data-[state=on]:bg-cyan-500/20 data-[state=on]:text-cyan-200 data-[state=on]:border-cyan-300/70">Premier</ToggleGroupItem>
+            <ToggleGroupItem value="mix10" className="px-4 font-display uppercase border border-lime-400/45 data-[state=on]:bg-lime-500/20 data-[state=on]:text-lime-200 data-[state=on]:border-lime-300/70">MIX10</ToggleGroupItem>
+          </ToggleGroup>
+          <p className="text-sm text-muted-foreground">{helperText}</p>
         </div>
 
         <div className="space-y-2">
@@ -131,7 +172,7 @@ export function CreateEventForm() {
           />
         </div>
 
-        <Button type="submit" disabled={loading} size="lg" className="w-full bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-glow font-display text-lg uppercase tracking-wider">
+        <Button type="submit" disabled={loading} size="lg" className="w-full font-display text-lg uppercase tracking-wider">
           {loading ? <Loader2 className="size-5 animate-spin" /> : "Utwórz zbiórkę"}
         </Button>
       </form>

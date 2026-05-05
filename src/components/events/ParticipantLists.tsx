@@ -12,10 +12,9 @@ const META: Record<ResponseStatus, { label: string; icon: typeof Crosshair; colo
 
 interface Props {
   participants: ParticipantRow[];
-  currentNickname?: string;
 }
 
-export function ParticipantLists({ participants, currentNickname }: Props) {
+export function ParticipantLists({ participants }: Props) {
   const groups: ResponseStatus[] = ["playing", "waitlist", "maybe", "not_playing"];
 
   return (
@@ -25,30 +24,25 @@ export function ParticipantLists({ participants, currentNickname }: Props) {
         if (list.length === 0 && (status === "waitlist" || status === "not_playing")) return null;
         const { label, icon: Icon, color } = META[status];
         return (
-          <Card key={status} className="bg-gradient-card border-border/60 p-4">
+          <Card key={status} className="bg-gradient-card border-border/70 p-4 shadow-card">
             <div className="flex items-center gap-2 mb-3">
               <Icon className={`size-4 ${color}`} />
               <h3 className="font-display text-lg font-semibold uppercase tracking-wide">
                 {label}
               </h3>
-              <Badge variant="secondary" className="ml-auto font-mono">{list.length}</Badge>
+              <Badge variant="secondary" className="ml-auto font-mono bg-secondary/80 border border-border/60">{list.length}</Badge>
             </div>
             {list.length === 0 ? (
               <p className="text-sm text-muted-foreground italic">Brak</p>
             ) : (
               <ul className="space-y-1.5">
                 {list.map((p) => {
-                  const isMe = currentNickname &&
-                    p.nickname.toLowerCase() === currentNickname.toLowerCase();
                   return (
                     <li
                       key={p.id}
-                      className={`text-sm py-1.5 px-3 rounded-md flex items-center justify-between ${
-                        isMe ? "bg-primary/15 border border-primary/40" : "bg-secondary/40"
-                      }`}
+                      className="text-sm py-1.5 px-3 rounded-md flex items-center justify-between border border-border/50 bg-secondary/45"
                     >
                       <span className="font-medium truncate">{p.nickname}</span>
-                      {isMe && <span className="text-xs text-primary font-display uppercase">ty</span>}
                     </li>
                   );
                 })}

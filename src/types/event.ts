@@ -1,5 +1,5 @@
 export type ResponseStatus = "playing" | "maybe" | "not_playing" | "waitlist";
-export type CsMode = "premier" | "faceit";
+export type CsMode = "premier" | "faceit" | "mix10";
 export type MaxPlayers = 5 | 10;
 
 export interface EventRow {
@@ -30,7 +30,6 @@ export interface ParticipantRow {
 export interface CreateEventInput {
   title: string;
   starts_at: string;
-  max_players: MaxPlayers;
   cs_mode: CsMode;
   discord_info: string;
   description?: string;

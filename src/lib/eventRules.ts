@@ -6,7 +6,15 @@ import type {
   ResponseStatus,
 } from "@/types/event";
 
+/** Event row plus playing count for public lists (not persisted). */
+export type UpcomingEventListItem = EventRow & { playingCount: number };
+
 export const NICKNAME_KEY = "zbierajsie:nickname";
+const MAX_PLAYERS_BY_MODE = {
+  faceit: 5,
+  premier: 5,
+  mix10: 10,
+} as const;
 
 // ---------- Pure rules ----------
 
@@ -45,13 +53,14 @@ function generateSlug(): string {
 // ---------- Persistence ----------
 
 export async function createEvent(input: CreateEventInput): Promise<EventRow> {
+  const maxPlayers = MAX_PLAYERS_BY_MODE[input.cs_mode];
   const { data, error } = await supabase
     .from("events")
     .insert({
       public_slug: generateSlug(),
       title: input.title,
       starts_at: input.starts_at,
-      max_players: input.max_players,
+      max_players: maxPlayers,
       cs_mode: input.cs_mode,
       discord_info: input.discord_info,
       description: input.description ?? null,
@@ -71,6 +80,42 @@ export async function getEventBySlug(slug: string): Promise<EventRow | null> {
     .maybeSingle();
   if (error) throw error;
   return data as EventRow | null;
+}
+
+/**
+ * Open events starting from now onward, sorted by start time.
+ * Playing counts are loaded in one follow-up query (no schema change).
+ */
+export async function getUpcomingEvents(): Promise<UpcomingEventListItem[]> {
+  const now = new Date().toISOString();
+  const { data: events, error } = await supabase
+    .from("events")
+    .select("*")
+    .eq("status", "open")
+    .gte("starts_at", now)
+    .order("starts_at", { ascending: true });
+  if (error) throw error;
+  const list = (events ?? []) as EventRow[];
+  if (list.length === 0) return [];
+
+  const ids = list.map((e) => e.id);
+  const { data: playingRows, error: pErr } = await supabase
+    .from("participants")
+    .select("event_id")
+    .in("event_id", ids)
+    .eq("response_status", "playing");
+  if (pErr) throw pErr;
+
+  const playingByEvent = new Map<string, number>();
+  for (const row of playingRows ?? []) {
+    const eid = row.event_id as string;
+    playingByEvent.set(eid, (playingByEvent.get(eid) ?? 0) + 1);
+  }
+
+  return list.map((e) => ({
+    ...e,
+    playingCount: playingByEvent.get(e.id) ?? 0,
+  }));
 }
 
 export async function getParticipants(eventId: string): Promise<ParticipantRow[]> {
