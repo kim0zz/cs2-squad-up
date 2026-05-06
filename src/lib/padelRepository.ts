@@ -1,7 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
+import { countFits } from "@/lib/padelRules";
 import type {
   CreatePadelGatheringInput,
   PadelGathering,
+  PadelGatheringListItem,
   PadelOption,
   PadelVote,
   PadelVoteStatus,
@@ -119,6 +121,72 @@ export async function upsertPadelVote(
     .single();
   if (error) throw error;
   return data as PadelVote;
+}
+
+/** Open gatherings with option counts and best „Pasuje” summary for list UI. */
+export async function getOpenPadelGatheringsList(): Promise<PadelGatheringListItem[]> {
+  const { data: gatherings, error } = await supabase
+    .from("padel_gatherings")
+    .select("*")
+    .eq("status", "open")
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  const list = (gatherings ?? []) as PadelGathering[];
+  if (list.length === 0) return [];
+
+  const gIds = list.map((g) => g.id);
+  const { data: allOptions, error: oErr } = await supabase
+    .from("padel_options")
+    .select("*")
+    .in("gathering_id", gIds)
+    .order("starts_at", { ascending: true });
+  if (oErr) throw oErr;
+  const opts = (allOptions ?? []) as PadelOption[];
+
+  const optsByGathering = new Map<string, PadelOption[]>();
+  for (const o of opts) {
+    const arr = optsByGathering.get(o.gathering_id) ?? [];
+    arr.push(o);
+    optsByGathering.set(o.gathering_id, arr);
+  }
+
+  const optionIds = opts.map((o) => o.id);
+  const votes = await getPadelVotes(optionIds);
+  const votesByOption = new Map<string, PadelVote[]>();
+  for (const v of votes) {
+    const arr = votesByOption.get(v.option_id) ?? [];
+    arr.push(v);
+    votesByOption.set(v.option_id, arr);
+  }
+
+  const items: PadelGatheringListItem[] = list.map((g) => {
+    const gOpts = optsByGathering.get(g.id) ?? [];
+    let maxFits = 0;
+    let hasComplete = false;
+    for (const o of gOpts) {
+      const ov = votesByOption.get(o.id) ?? [];
+      const f = countFits(ov);
+      if (f > maxFits) maxFits = f;
+      if (f >= 4) hasComplete = true;
+    }
+    return {
+      ...g,
+      optionsCount: gOpts.length,
+      hasCompleteOption: hasComplete,
+      maxFitsCount: maxFits,
+    };
+  });
+
+  items.sort((a, b) => {
+    const minStart = (id: string) => {
+      const o = optsByGathering.get(id) ?? [];
+      if (o.length === 0) return "\uffff";
+      return o.reduce((m, x) => (x.starts_at < m ? x.starts_at : m), o[0].starts_at);
+    };
+    return minStart(a.id).localeCompare(minStart(b.id));
+  });
+
+  return items;
 }
 
 export async function getUpcomingPadelGatherings(): Promise<UpcomingPadelGatheringItem[]> {

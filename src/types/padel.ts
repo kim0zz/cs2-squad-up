@@ -46,3 +46,10 @@ export interface CreatePadelGatheringInput {
 export type PadelOptionWithVotes = PadelOption & { votes: PadelVote[] };
 
 export type UpcomingPadelGatheringItem = PadelGathering & { options: PadelOption[] };
+
+/** Open gathering row for /padel list (vote summary computed server-side in repo). */
+export type PadelGatheringListItem = PadelGathering & {
+  optionsCount: number;
+  hasCompleteOption: boolean;
+  maxFitsCount: number;
+};

@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { UpcomingPadelGatheringsList } from "@/components/padel/UpcomingPadelGatheringsList";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
@@ -16,9 +16,9 @@ const PadelPage = () => {
         >
           ← Strona główna
         </Link>
-        <Card className="bg-gradient-card border-border/80 p-8 mt-8 text-center">
-          <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Padel</h1>
-        </Card>
+        <div className="mt-8">
+          <UpcomingPadelGatheringsList />
+        </div>
       </div>
     </main>
   );
