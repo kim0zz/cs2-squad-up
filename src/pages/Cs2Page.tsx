@@ -3,10 +3,18 @@ import { UpcomingEventsList } from "@/components/events/UpcomingEventsList";
 import { Button } from "@/components/ui/button";
 import { Crosshair } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 
-const Index = () => {
+const Cs2Page = () => {
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
   const createFormRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("create") === "1") {
+      setIsCreateFormOpen(true);
+    }
+  }, []);
 
   useEffect(() => {
     document.title = "Zbieraj się! — Organizuj sesje CS2";
@@ -37,6 +45,13 @@ const Index = () => {
   return (
     <main className="min-h-screen">
       <div className="container max-w-2xl px-4 py-6 sm:py-10">
+        <Link
+          to="/"
+          className="inline-flex items-center rounded-md border border-border/80 bg-secondary/45 px-3 py-2 text-sm font-display uppercase tracking-wide text-foreground transition-colors hover:border-primary/50 hover:bg-secondary/75 mb-6"
+        >
+          ← Wybierz sport
+        </Link>
+
         <header className="text-center mb-7 sm:mb-8">
           <div className="inline-flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
             <div className="size-11 shrink-0 rounded-lg bg-gradient-primary grid place-items-center shadow-glow ring-1 ring-primary/50 sm:size-12">
@@ -80,4 +95,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Cs2Page;

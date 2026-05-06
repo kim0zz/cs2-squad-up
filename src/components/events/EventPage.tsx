@@ -145,7 +145,7 @@ export function EventPage() {
   return (
     <div className="space-y-6">
       <Link
-        to="/"
+        to="/cs2"
         className="inline-flex items-center rounded-md border border-border/80 bg-secondary/45 px-3 py-2 text-sm font-display uppercase tracking-wide text-foreground transition-colors hover:border-primary/50 hover:bg-secondary/75"
       >
         ← Utwórz kolejną zbiórkę
