@@ -1,5 +1,7 @@
 import type { PadelOptionWithVotes, PadelVote } from "@/types/padel";
 
+export const PADEL_NICKNAME_KEY = "zbierajsie:padel:nickname";
+
 export function countFits(votes: PadelVote[]): number {
   return votes.filter((v) => v.vote_status === "fits").length;
 }
