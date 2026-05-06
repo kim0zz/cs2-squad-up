@@ -97,6 +97,112 @@ export type Database = {
           },
         ]
       }
+      padel_gatherings: {
+        Row: {
+          id: string
+          public_slug: string
+          title: string
+          description: string | null
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          public_slug: string
+          title: string
+          description?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          public_slug?: string
+          title?: string
+          description?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      padel_options: {
+        Row: {
+          id: string
+          gathering_id: string
+          venue_name: string
+          starts_at: string
+          duration_minutes: number | null
+          price_per_person: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          gathering_id: string
+          venue_name: string
+          starts_at: string
+          duration_minutes?: number | null
+          price_per_person?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          gathering_id?: string
+          venue_name?: string
+          starts_at?: string
+          duration_minutes?: number | null
+          price_per_person?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "padel_options_gathering_id_fkey"
+            columns: ["gathering_id"]
+            isOneToOne: false
+            referencedRelation: "padel_gatherings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      padel_votes: {
+        Row: {
+          id: string
+          option_id: string
+          nickname: string
+          vote_status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          option_id: string
+          nickname: string
+          vote_status: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          option_id?: string
+          nickname?: string
+          vote_status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "padel_votes_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "padel_options"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
