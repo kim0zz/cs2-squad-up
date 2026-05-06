@@ -7,6 +7,7 @@ import HomePage from "./pages/HomePage.tsx";
 import Cs2Page from "./pages/Cs2Page.tsx";
 import PadelPage from "./pages/PadelPage.tsx";
 import PadelNewPage from "./pages/PadelNewPage.tsx";
+import PadelGatheringPage from "./pages/PadelGatheringPage.tsx";
 import EventRoute from "./pages/EventRoute.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/cs2" element={<Cs2Page />} />
           <Route path="/padel" element={<PadelPage />} />
           <Route path="/padel/new" element={<PadelNewPage />} />
+          <Route path="/padel/:slug" element={<PadelGatheringPage />} />
           <Route path="/e/:slug" element={<EventRoute />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
