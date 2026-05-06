@@ -8,13 +8,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { buildInvitationMessage } from "@/lib/invitationMessage";
 import { toast } from "sonner";
 import {
-  countPlaying,
   getEventBySlug,
   getParticipants,
-  NICKNAME_KEY,
-  spotsLeft,
   upsertParticipant,
-} from "@/lib/eventRules";
+} from "@/lib/eventRepository";
+import { countPlaying, NICKNAME_KEY, spotsLeft } from "@/lib/eventRules";
 import type { EventRow, ParticipantRow, ResponseStatus } from "@/types/event";
 import { ParticipantLists } from "./ParticipantLists";
 import { Calendar, Copy, Gamepad2, MessageSquare, Users } from "lucide-react";
@@ -99,8 +97,13 @@ export function EventPage() {
     }
   };
 
+  const getCanonicalEventUrl = () =>
+    event
+      ? `${window.location.origin}/e/${event.public_slug}`
+      : window.location.origin;
+
   const copyLink = async () => {
-    await navigator.clipboard.writeText(window.location.href);
+    await navigator.clipboard.writeText(getCanonicalEventUrl());
     toast.success("Link skopiowany");
   };
 
@@ -111,7 +114,7 @@ export function EventPage() {
       modeLabel: MODE_LABELS[event.cs_mode],
       playingCount,
       spotsLeftCount: left,
-      url: window.location.href,
+      url: getCanonicalEventUrl(),
     });
     await navigator.clipboard.writeText(message);
     toast.success("Zaproszenie skopiowane");

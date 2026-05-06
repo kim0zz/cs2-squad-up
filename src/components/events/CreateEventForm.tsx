@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { toast } from "sonner";
-import { createEvent } from "@/lib/eventRules";
+import { createEvent } from "@/lib/eventRepository";
 import type { CsMode } from "@/types/event";
 import { Loader2, Target } from "lucide-react";
 

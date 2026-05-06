@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getUpcomingEvents, type UpcomingEventListItem } from "@/lib/eventRules";
+import { getUpcomingEvents, type UpcomingEventListItem } from "@/lib/eventRepository";
 import type { CsMode } from "@/types/event";
 import { toast } from "sonner";
 
