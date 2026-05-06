@@ -3,7 +3,9 @@ import { Link, useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { PadelOptionCard } from "@/components/padel/PadelOptionCard";
+import { buildPadelInvitationMessage } from "@/lib/padelInvitationMessage";
 import {
   getPadelGatheringBySlug,
   getPadelOptions,
@@ -19,6 +21,7 @@ import type {
   PadelVoteStatus,
 } from "@/types/padel";
 import { toast } from "sonner";
+import { Copy } from "lucide-react";
 
 function mergeOptionsWithVotes(options: PadelOption[], votes: PadelVote[]): PadelOptionWithVotes[] {
   const withVotes: PadelOptionWithVotes[] = options.map((o) => ({
@@ -136,15 +139,39 @@ export function PadelGatheringPage() {
     );
   }
 
+  const getCanonicalPadelUrl = () =>
+    `${window.location.origin}/padel/${gathering.public_slug}`;
+
+  const copyInvitation = async () => {
+    const text = buildPadelInvitationMessage({
+      gathering,
+      options: baseOptions,
+      url: getCanonicalPadelUrl(),
+    });
+    await navigator.clipboard.writeText(text);
+    toast.success("Zaproszenie skopiowane");
+  };
+
   return (
     <main className="min-h-screen">
       <div className="container max-w-2xl px-4 py-10 space-y-6">
-        <Link
-          to="/padel"
-          className="inline-flex items-center rounded-md border border-border/80 bg-secondary/45 px-3 py-2 text-sm font-display uppercase tracking-wide text-foreground transition-colors hover:border-primary/50 hover:bg-secondary/75"
-        >
-          ← Zbiórki padla
-        </Link>
+        <div className="flex flex-wrap items-center gap-2 justify-between">
+          <Link
+            to="/padel"
+            className="inline-flex items-center rounded-md border border-border/80 bg-secondary/45 px-3 py-2 text-sm font-display uppercase tracking-wide text-foreground transition-colors hover:border-primary/50 hover:bg-secondary/75"
+          >
+            ← Zbiórki padla
+          </Link>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={copyInvitation}
+            className="gap-2 font-display uppercase tracking-wide"
+          >
+            <Copy className="size-4" />
+            Kopiuj zaproszenie
+          </Button>
+        </div>
 
         <Card className="bg-gradient-card border-border/80 p-6 sm:p-8">
           <h1 className="font-display text-3xl font-bold uppercase tracking-wide break-words">
