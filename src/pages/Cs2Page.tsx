@@ -32,12 +32,18 @@ const Cs2Page = () => {
 
   useEffect(() => {
     if (!isCreateFormOpen) return;
-    const id = requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        createFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
+    const scrollToForm = () =>
+      createFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const raf = requestAnimationFrame(() => {
+      requestAnimationFrame(scrollToForm);
     });
-    return () => cancelAnimationFrame(id);
+    // Re-align once the async events list has rendered and layout settled,
+    // otherwise the initial scroll lands above the form (the list pushes it down).
+    const timeout = window.setTimeout(scrollToForm, 400);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(timeout);
+    };
   }, [isCreateFormOpen]);
 
   const openCreateForm = () => setIsCreateFormOpen(true);
