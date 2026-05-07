@@ -262,6 +262,20 @@ export function CreatePadelGatheringForm() {
               </div>
             </div>
           ))}
+
+          <div className="flex justify-end pt-1">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="font-display uppercase tracking-wide gap-1"
+              onClick={addOption}
+              disabled={options.length >= 4}
+            >
+              <Plus className="size-4" />
+              Dodaj termin
+            </Button>
+          </div>
         </div>
 
         <Button
