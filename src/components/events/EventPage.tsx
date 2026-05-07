@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +39,7 @@ const MODE_BADGE_VARIANT: Record<EventRow["cs_mode"], "modeFaceit" | "modePremie
 
 export function EventPage() {
   const { slug } = useParams<{ slug: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [event, setEvent] = useState<EventRow | null>(null);
   const [participants, setParticipants] = useState<ParticipantRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -119,6 +128,14 @@ export function EventPage() {
     await navigator.clipboard.writeText(message);
     toast.success("Zaproszenie skopiowane");
   };
+
+  const clearCreatedParam = () => {
+    const next = new URLSearchParams(searchParams);
+    next.delete("created");
+    setSearchParams(next, { replace: true });
+  };
+
+  const showCreatedSuccessModal = searchParams.get("created") === "1";
 
   if (loading) {
     return (
@@ -257,6 +274,45 @@ export function EventPage() {
       </Card>
 
       <ParticipantLists participants={participants} />
+
+      <Dialog
+        open={showCreatedSuccessModal}
+        onOpenChange={(open) => {
+          if (!open) clearCreatedParam();
+        }}
+      >
+        <DialogContent className="border-border/80 bg-gradient-card sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl uppercase tracking-wide">
+              Zbiórka utworzona!
+            </DialogTitle>
+            <DialogDescription className="text-base leading-relaxed">
+              Wrzuć zaproszenie na grupę, żeby inni mogli się wpisać.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="font-display uppercase tracking-wide"
+              onClick={clearCreatedParam}
+            >
+              Zamknij
+            </Button>
+            <Button
+              type="button"
+              className="gap-2 font-display uppercase tracking-wide"
+              onClick={async () => {
+                await copyInvitation();
+                clearCreatedParam();
+              }}
+            >
+              <Copy className="size-4" />
+              Kopiuj zaproszenie
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

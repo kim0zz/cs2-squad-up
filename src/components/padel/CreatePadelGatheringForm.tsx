@@ -110,7 +110,7 @@ export function CreatePadelGatheringForm() {
       };
       const { gathering } = await createPadelGathering(payload);
       toast.success("Zbiórka padla utworzona!");
-      navigate(`/padel/${gathering.public_slug}`);
+      navigate(`/padel/${gathering.public_slug}?created=1`);
     } catch (err) {
       console.error(err);
       toast.error("Nie udało się utworzyć zbiórki");

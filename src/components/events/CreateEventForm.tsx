@@ -69,7 +69,7 @@ export function CreateEventForm() {
         description: description.trim() || undefined,
       });
       toast.success("Zbiórka utworzona!");
-      navigate(`/e/${event.public_slug}`);
+      navigate(`/e/${event.public_slug}?created=1`);
     } catch (err) {
       console.error(err);
       toast.error("Nie udało się utworzyć zbiórki");
