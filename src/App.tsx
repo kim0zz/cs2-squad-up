@@ -8,6 +8,10 @@ import Cs2Page from "./pages/Cs2Page.tsx";
 import PadelPage from "./pages/PadelPage.tsx";
 import PadelNewPage from "./pages/PadelNewPage.tsx";
 import PadelGatheringPage from "./pages/PadelGatheringPage.tsx";
+import FootballPage from "./pages/FootballPage.tsx";
+import FootballNewPage from "./pages/FootballNewPage.tsx";
+import FootballSeriesPage from "./pages/FootballSeriesPage.tsx";
+import FootballOccurrencePage from "./pages/FootballOccurrencePage.tsx";
 import EventRoute from "./pages/EventRoute.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -25,6 +29,10 @@ const App = () => (
           <Route path="/padel" element={<PadelPage />} />
           <Route path="/padel/new" element={<PadelNewPage />} />
           <Route path="/padel/:slug" element={<PadelGatheringPage />} />
+          <Route path="/football" element={<FootballPage />} />
+          <Route path="/football/new" element={<FootballNewPage />} />
+          <Route path="/football/:slug" element={<FootballSeriesPage />} />
+          <Route path="/football/:slug/:occurrenceId" element={<FootballOccurrencePage />} />
           <Route path="/e/:slug" element={<EventRoute />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
