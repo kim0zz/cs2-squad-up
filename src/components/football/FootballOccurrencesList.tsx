@@ -42,7 +42,7 @@ export function FootballOccurrencesList({
         const spotsLeft = Math.max(0, maxPlayers - playingCount);
         const statusText = spotsLeft === 0 ? "Komplet" : `Brakuje ${spotsLeft}`;
         const suffix = adminToken ? `?admin=${encodeURIComponent(adminToken)}` : "";
-        const targetUrl = `/football/${seriesSlug}/${occurrence.id}${suffix}`;
+        const targetUrl = `/football/${seriesSlug}/${occurrence.public_slug}${suffix}`;
 
         return (
           <div

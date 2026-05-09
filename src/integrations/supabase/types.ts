@@ -255,6 +255,7 @@ export type Database = {
         Row: {
           id: string
           series_id: string
+          public_slug: string
           starts_at: string
           status: string
           created_at: string
@@ -263,6 +264,7 @@ export type Database = {
         Insert: {
           id?: string
           series_id: string
+          public_slug: string
           starts_at: string
           status?: string
           created_at?: string
@@ -273,6 +275,7 @@ export type Database = {
           series_id?: string
           starts_at?: string
           status?: string
+          public_slug?: string
           created_at?: string
           updated_at?: string
         }

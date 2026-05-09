@@ -15,7 +15,7 @@ import {
   buildFootballRegularReminderMessage,
 } from "@/lib/footballInvitationMessage";
 import {
-  getFootballOccurrenceById,
+  getFootballOccurrenceBySlugOrId,
   getFootballRegularPlayers,
   getFootballSeriesBySlug,
   getFootballSignups,
@@ -63,7 +63,7 @@ export function FootballOccurrencePage() {
         setPhase("notfound");
         return;
       }
-      const loadedOccurrence = await getFootballOccurrenceById(occurrenceId);
+      const loadedOccurrence = await getFootballOccurrenceBySlugOrId(occurrenceId);
       if (!loadedOccurrence || loadedOccurrence.series_id !== loadedSeries.id) {
         setPhase("notfound");
         return;
@@ -124,7 +124,7 @@ export function FootballOccurrencePage() {
   }, [series, occurrence]);
   const cleanOccurrenceUrl = useMemo(() => {
     if (!series || !occurrence) return "";
-    return `${window.location.origin}/football/${series.public_slug}/${occurrence.id}`;
+    return `${window.location.origin}/football/${series.public_slug}/${occurrence.public_slug}`;
   }, [series, occurrence]);
 
   const submitDecision = async (desiredStatus: "playing" | "not_playing") => {

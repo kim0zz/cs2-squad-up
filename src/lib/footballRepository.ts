@@ -21,6 +21,11 @@ function generateSlug(): string {
   return Math.random().toString(36).slice(2, 6) + Math.random().toString(36).slice(2, 6);
 }
 
+/** Short random slug for occurrence URLs (same style as series public_slug). */
+function generateOccurrenceSlug(): string {
+  return Math.random().toString(36).slice(2, 6) + Math.random().toString(36).slice(2, 6);
+}
+
 function generateAdminToken(): string {
   return (
     Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 10)
@@ -143,6 +148,7 @@ export async function createFootballSeries(
       occurrenceIsos.map((starts_at) => ({
         series_id: createdSeries.id,
         starts_at,
+        public_slug: generateOccurrenceSlug(),
       })),
     )
     .select();
@@ -182,6 +188,36 @@ export async function getFootballOccurrenceById(
     .maybeSingle();
   if (error) throw error;
   return (data ?? null) as FootballOccurrence | null;
+}
+
+export async function getFootballOccurrenceByPublicSlug(
+  publicSlug: string,
+): Promise<FootballOccurrence | null> {
+  const { data, error } = await supabase
+    .from("football_occurrences")
+    .select("*")
+    .eq("public_slug", publicSlug)
+    .maybeSingle();
+  if (error) throw error;
+  return (data ?? null) as FootballOccurrence | null;
+}
+
+function isUuidRouteParam(value: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+}
+
+/**
+ * Resolve occurrence from the second URL segment: public_slug first, then legacy UUID id.
+ */
+export async function getFootballOccurrenceBySlugOrId(
+  occurrenceSlugOrId: string,
+): Promise<FootballOccurrence | null> {
+  const bySlug = await getFootballOccurrenceByPublicSlug(occurrenceSlugOrId);
+  if (bySlug) return bySlug;
+  if (isUuidRouteParam(occurrenceSlugOrId)) {
+    return getFootballOccurrenceById(occurrenceSlugOrId);
+  }
+  return null;
 }
 
 export async function getFootballRegularPlayers(

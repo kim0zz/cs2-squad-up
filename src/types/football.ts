@@ -19,6 +19,7 @@ export interface FootballSeries {
 export interface FootballOccurrence {
   id: string;
   series_id: string;
+  public_slug: string;
   starts_at: string;
   status: string;
   created_at: string;
