@@ -437,3 +437,62 @@ export async function upsertFootballSignup(
   if (error) throw error;
   return data as FootballSignup;
 }
+
+/**
+ * Organizer override: force a signup to `playing` without priority/deadline/capacity rules.
+ * Caller must enforce admin-only use in the UI.
+ */
+export async function adminPromoteFootballSignupToPlaying(input: {
+  occurrence_id: string;
+  nickname: string;
+}): Promise<FootballSignup> {
+  const trimmedNick = input.nickname.trim();
+  if (!trimmedNick) {
+    throw new Error("Nickname is required");
+  }
+
+  const { data: occurrence, error: oErr } = await supabase
+    .from("football_occurrences")
+    .select("*")
+    .eq("id", input.occurrence_id)
+    .maybeSingle();
+  if (oErr) throw oErr;
+  if (!occurrence) throw new Error("Occurrence not found");
+  const occ = occurrence as FootballOccurrence;
+
+  const { data: series, error: sErr } = await supabase
+    .from("football_series")
+    .select("*")
+    .eq("id", occ.series_id)
+    .single();
+  if (sErr) throw sErr;
+  const seriesRow = series as FootballSeries;
+
+  const [signups, regulars] = await Promise.all([
+    getFootballSignups(occ.id),
+    getFootballRegularPlayers(seriesRow.id),
+  ]);
+
+  const existing = signups.find(
+    (s) => s.nickname.toLowerCase() === trimmedNick.toLowerCase(),
+  );
+  if (!existing) {
+    throw new Error("Signup not found");
+  }
+
+  const isRegular = regulars.some(
+    (r) => r.nickname.toLowerCase() === trimmedNick.toLowerCase(),
+  );
+
+  const { data, error } = await supabase
+    .from("football_signups")
+    .update({
+      response_status: "playing",
+      is_regular: isRegular,
+    })
+    .eq("id", existing.id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data as FootballSignup;
+}

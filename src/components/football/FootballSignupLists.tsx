@@ -8,6 +8,8 @@ interface FootballSignupListsProps {
   regularPlayers: FootballRegularPlayer[];
   busyNickname: string | null;
   signupsDisabled?: boolean;
+  isAdmin?: boolean;
+  onAdminPromoteWaitlistToPlaying?: (nickname: string) => Promise<void>;
   onAdminDecision: (nickname: string, desiredStatus: "playing" | "not_playing") => Promise<void>;
 }
 
@@ -48,6 +50,8 @@ export function FootballSignupLists({
   regularPlayers,
   busyNickname,
   signupsDisabled = false,
+  isAdmin = false,
+  onAdminPromoteWaitlistToPlaying,
   onAdminDecision,
 }: FootballSignupListsProps) {
   const playing = signups
@@ -102,13 +106,24 @@ export function FootballSignupLists({
             {waitlist.map((signup) => (
               <li key={signup.id} className="flex items-start gap-2 py-1 first:pt-0 last:pb-0">
                 <span className="min-w-0 flex-1 break-words leading-tight">{signup.nickname}</span>
-                <StatusIconButton
-                  label="Nie gra"
-                  disabled={signupsDisabled || busyNickname === signup.nickname}
-                  onClick={() => void onAdminDecision(signup.nickname, "not_playing")}
-                >
-                  ×
-                </StatusIconButton>
+                <div className="flex shrink-0 items-start gap-0.5 self-start">
+                  {isAdmin && onAdminPromoteWaitlistToPlaying && (
+                    <StatusIconButton
+                      label="Do składu"
+                      disabled={signupsDisabled || busyNickname === signup.nickname}
+                      onClick={() => void onAdminPromoteWaitlistToPlaying(signup.nickname)}
+                    >
+                      ↑
+                    </StatusIconButton>
+                  )}
+                  <StatusIconButton
+                    label="Nie gra"
+                    disabled={signupsDisabled || busyNickname === signup.nickname}
+                    onClick={() => void onAdminDecision(signup.nickname, "not_playing")}
+                  >
+                    ×
+                  </StatusIconButton>
+                </div>
               </li>
             ))}
           </ul>

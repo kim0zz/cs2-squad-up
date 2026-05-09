@@ -20,6 +20,7 @@ import {
   getFootballRegularPlayers,
   getFootballSeriesBySlug,
   getFootballSignups,
+  adminPromoteFootballSignupToPlaying,
   updateFootballOccurrenceStatus,
   upsertFootballSignup,
 } from "@/lib/footballRepository";
@@ -113,8 +114,10 @@ export function FootballOccurrencePage() {
   }, [slug, adminToken]);
 
   const playingCount = countPlaying(signups);
-  const spotsLeft = Math.max(0, (series?.max_players ?? 0) - playingCount);
-  const capacityText = spotsLeft > 0 ? `Brakuje ${spotsLeft}` : "Komplet";
+  const maxPlayers = series?.max_players ?? 0;
+  const overCapacity = playingCount > maxPlayers;
+  const spotsLeft = Math.max(0, maxPlayers - playingCount);
+  const capacityText = overCapacity ? null : spotsLeft > 0 ? `Brakuje ${spotsLeft}` : "Komplet";
   const regularDeadlineOpen =
     series && occurrence
       ? isRegularDeadlineOpen(occurrence.starts_at, series.regular_deadline_hours_before)
@@ -174,6 +177,25 @@ export function FootballOccurrencePage() {
         occurrence_id: occurrence.id,
         nickname: regularNickname,
         desired_status: desiredStatus,
+      });
+      const nextSignups = await getFootballSignups(occurrence.id);
+      setSignups(nextSignups);
+      toast.success("Zapisano decyzję gracza");
+    } catch (error) {
+      console.error(error);
+      toast.error("Nie udało się zapisać");
+    } finally {
+      setBusyNickname(null);
+    }
+  };
+
+  const handleAdminPromoteWaitlistToPlaying = async (playerNickname: string) => {
+    if (!occurrence || occurrence.status !== "open" || !isAdmin) return;
+    setBusyNickname(playerNickname);
+    try {
+      await adminPromoteFootballSignupToPlaying({
+        occurrence_id: occurrence.id,
+        nickname: playerNickname,
       });
       const nextSignups = await getFootballSignups(occurrence.id);
       setSignups(nextSignups);
@@ -317,10 +339,17 @@ export function FootballOccurrencePage() {
               {series.description}
             </p>
           )}
-          <p className="text-sm">
-            <span className="text-muted-foreground">Skład:</span> {playingCount}/{series.max_players}
+          <p className="text-sm flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span>
+              <span className="text-muted-foreground">Skład:</span> {playingCount}/{series.max_players}
+            </span>
+            {overCapacity && (
+              <span className="rounded border border-amber-500/50 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-400">
+                Ponad limit
+              </span>
+            )}
           </p>
-          <p className="text-sm font-medium">{capacityText}</p>
+          {capacityText != null && <p className="text-sm font-medium">{capacityText}</p>}
           <p className="text-sm text-muted-foreground border-t border-border/60 pt-3">
             {isCancelled ? (
               "Zapisy na ten termin są zamknięte."
@@ -339,6 +368,8 @@ export function FootballOccurrencePage() {
           regularPlayers={regularPlayers}
           busyNickname={busyNickname}
           signupsDisabled={isCancelled}
+          isAdmin={isAdmin}
+          onAdminPromoteWaitlistToPlaying={handleAdminPromoteWaitlistToPlaying}
           onAdminDecision={handleAdminDecision}
         />
 
