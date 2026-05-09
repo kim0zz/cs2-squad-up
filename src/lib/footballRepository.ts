@@ -100,6 +100,15 @@ export async function createFootballSeries(
   occurrences: FootballOccurrence[];
   regularPlayers: FootballRegularPlayer[];
 }> {
+  const {
+    data: { user },
+    error: authErr,
+  } = await supabase.auth.getUser();
+  if (authErr) throw authErr;
+  if (!user) {
+    throw new Error("Wymagane logowanie organizatora");
+  }
+
   const deadlineHours =
     input.regular_deadline_hours_before ?? DEFAULT_DEADLINE_HOURS_BEFORE;
 
@@ -108,6 +117,7 @@ export async function createFootballSeries(
     .insert({
       public_slug: generateSlug(),
       admin_token: generateAdminToken(),
+      created_by: user.id,
       title: input.title,
       location: input.location,
       weekday: input.weekday,

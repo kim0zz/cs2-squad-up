@@ -208,6 +208,7 @@ export type Database = {
           id: string
           public_slug: string
           admin_token: string
+          created_by: string | null
           title: string
           location: string
           weekday: number
@@ -223,6 +224,7 @@ export type Database = {
           id?: string
           public_slug: string
           admin_token: string
+          created_by: string
           title: string
           location: string
           weekday: number
@@ -238,6 +240,7 @@ export type Database = {
           id?: string
           public_slug?: string
           admin_token?: string
+          created_by?: string | null
           title?: string
           location?: string
           weekday?: number

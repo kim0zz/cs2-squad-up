@@ -6,6 +6,7 @@ export interface FootballSeries {
   id: string;
   public_slug: string;
   admin_token: string;
+  created_by: string | null;
   title: string;
   location: string;
   weekday: number;
