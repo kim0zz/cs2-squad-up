@@ -385,42 +385,6 @@ export function FootballOccurrencePage() {
           onAdminDecision={handleAdminDecision}
         />
 
-        <FootballDiscussion
-          occurrenceId={occurrence.id}
-          comments={occurrenceComments}
-          onCommentsRefresh={refreshOccurrenceComments}
-        />
-
-        {isAdmin && (
-          <Card className="space-y-3 border-border/80 bg-gradient-card p-6">
-            <h2 className="font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
-              Administracja
-            </h2>
-            {occurrence.status === "open" && (
-              <Button
-                type="button"
-                variant="destructive"
-                disabled={updatingOccurrenceStatus}
-                className="font-display uppercase tracking-wide"
-                onClick={() => void handleOccurrenceStatusChange("cancelled")}
-              >
-                Odwołaj termin
-              </Button>
-            )}
-            {occurrence.status === "cancelled" && (
-              <Button
-                type="button"
-                variant="outline"
-                disabled={updatingOccurrenceStatus}
-                className="font-display uppercase tracking-wide"
-                onClick={() => void handleOccurrenceStatusChange("open")}
-              >
-                Przywróć termin
-              </Button>
-            )}
-          </Card>
-        )}
-
         {!isCancelled && (
           <Card className="space-y-4 border-border/80 bg-gradient-card p-6">
             {!manualSignupOpen ? (
@@ -474,6 +438,42 @@ export function FootballOccurrencePage() {
                   </Button>
                 </div>
               </>
+            )}
+          </Card>
+        )}
+
+        <FootballDiscussion
+          occurrenceId={occurrence.id}
+          comments={occurrenceComments}
+          onCommentsRefresh={refreshOccurrenceComments}
+        />
+
+        {isAdmin && (
+          <Card className="space-y-3 border-border/80 bg-gradient-card p-6">
+            <h2 className="font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
+              Administracja
+            </h2>
+            {occurrence.status === "open" && (
+              <Button
+                type="button"
+                variant="destructive"
+                disabled={updatingOccurrenceStatus}
+                className="font-display uppercase tracking-wide"
+                onClick={() => void handleOccurrenceStatusChange("cancelled")}
+              >
+                Odwołaj termin
+              </Button>
+            )}
+            {occurrence.status === "cancelled" && (
+              <Button
+                type="button"
+                variant="outline"
+                disabled={updatingOccurrenceStatus}
+                className="font-display uppercase tracking-wide"
+                onClick={() => void handleOccurrenceStatusChange("open")}
+              >
+                Przywróć termin
+              </Button>
             )}
           </Card>
         )}
