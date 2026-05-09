@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { isFootballSeriesAdmin } from "@/lib/footballSeriesAdmin";
 import {
   countPlaying,
   FOOTBALL_NICKNAME_KEY,
@@ -29,6 +30,7 @@ import type {
   FootballSignup,
   FootballSignupStatus,
 } from "@/types/football";
+import { useAuth } from "@/hooks/useAuth";
 import { FootballSignupLists } from "./FootballSignupLists";
 
 const DATE_TIME_FORMATTER = new Intl.DateTimeFormat("pl-PL", {
@@ -43,6 +45,7 @@ const DATE_TIME_FORMATTER = new Intl.DateTimeFormat("pl-PL", {
 export function FootballOccurrencePage() {
   const { slug, occurrenceId } = useParams<{ slug: string; occurrenceId: string }>();
   const [searchParams] = useSearchParams();
+  const { user } = useAuth();
   const [phase, setPhase] = useState<"loading" | "notfound" | "ready">("loading");
   const [series, setSeries] = useState<FootballSeries | null>(null);
   const [occurrence, setOccurrence] = useState<FootballOccurrence | null>(null);
@@ -98,7 +101,9 @@ export function FootballOccurrencePage() {
   }, [phase, series, occurrence]);
 
   const adminToken = searchParams.get("admin");
-  const hasValidAdminToken = Boolean(series && adminToken && adminToken === series.admin_token);
+  const isAdmin = Boolean(
+    series && isFootballSeriesAdmin(series, user, adminToken),
+  );
   const isCancelled = occurrence?.status === "cancelled";
   const seriesBackLink = useMemo(() => {
     if (!slug) return "/football";
@@ -207,7 +212,7 @@ export function FootballOccurrencePage() {
   };
 
   const handleOccurrenceStatusChange = async (nextStatus: "open" | "cancelled") => {
-    if (!occurrence || !hasValidAdminToken) return;
+    if (!occurrence || !isAdmin) return;
     setUpdatingOccurrenceStatus(true);
     try {
       const updated = await updateFootballOccurrenceStatus(occurrence.id, nextStatus);
@@ -359,7 +364,7 @@ export function FootballOccurrencePage() {
           )}
         </Card>
 
-        {hasValidAdminToken && (
+        {isAdmin && (
           <Card className="space-y-3 border-border/80 bg-gradient-card p-6">
             <h2 className="font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
               Administracja
