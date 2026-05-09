@@ -203,6 +203,156 @@ export type Database = {
           },
         ]
       }
+      football_series: {
+        Row: {
+          id: string
+          public_slug: string
+          admin_token: string
+          title: string
+          location: string
+          weekday: number
+          start_time: string
+          max_players: number
+          regular_deadline_hours_before: number
+          description: string | null
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          public_slug: string
+          admin_token: string
+          title: string
+          location: string
+          weekday: number
+          start_time: string
+          max_players: number
+          regular_deadline_hours_before?: number
+          description?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          public_slug?: string
+          admin_token?: string
+          title?: string
+          location?: string
+          weekday?: number
+          start_time?: string
+          max_players?: number
+          regular_deadline_hours_before?: number
+          description?: string | null
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      football_occurrences: {
+        Row: {
+          id: string
+          series_id: string
+          starts_at: string
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          series_id: string
+          starts_at: string
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          series_id?: string
+          starts_at?: string
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "football_occurrences_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "football_series"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      football_regular_players: {
+        Row: {
+          id: string
+          series_id: string
+          nickname: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          series_id: string
+          nickname: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          series_id?: string
+          nickname?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "football_regular_players_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "football_series"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      football_signups: {
+        Row: {
+          id: string
+          occurrence_id: string
+          nickname: string
+          is_regular: boolean
+          response_status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          occurrence_id: string
+          nickname: string
+          is_regular?: boolean
+          response_status: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          occurrence_id?: string
+          nickname?: string
+          is_regular?: boolean
+          response_status?: string
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "football_signups_occurrence_id_fkey"
+            columns: ["occurrence_id"]
+            isOneToOne: false
+            referencedRelation: "football_occurrences"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
