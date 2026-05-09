@@ -304,6 +304,11 @@ export function FootballOccurrencePage() {
           <h1 className="font-display text-2xl font-bold uppercase tracking-wide sm:text-3xl">
             {series.title}
           </h1>
+          {series.description?.trim() && (
+            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
+              {series.description}
+            </p>
+          )}
           <p className="text-sm">
             <span className="text-muted-foreground">Termin:</span>{" "}
             {DATE_TIME_FORMATTER.format(new Date(occurrence.starts_at))}

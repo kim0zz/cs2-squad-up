@@ -246,6 +246,11 @@ export function FootballSeriesPage() {
               {formatDeadline(series.regular_deadline_hours_before)}
             </p>
           </div>
+          {series.description?.trim() && (
+            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap border-t border-border/60 pt-4">
+              {series.description}
+            </p>
+          )}
         </Card>
 
         {isAdmin && (
