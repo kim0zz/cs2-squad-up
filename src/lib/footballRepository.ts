@@ -172,6 +172,18 @@ export async function getFootballOccurrences(seriesId: string): Promise<Football
   return (data ?? []) as FootballOccurrence[];
 }
 
+export async function getFootballOccurrenceById(
+  occurrenceId: string,
+): Promise<FootballOccurrence | null> {
+  const { data, error } = await supabase
+    .from("football_occurrences")
+    .select("*")
+    .eq("id", occurrenceId)
+    .maybeSingle();
+  if (error) throw error;
+  return (data ?? null) as FootballOccurrence | null;
+}
+
 export async function getFootballRegularPlayers(
   seriesId: string,
 ): Promise<FootballRegularPlayer[]> {
