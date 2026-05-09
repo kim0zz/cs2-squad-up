@@ -17,6 +17,7 @@ import {
 } from "@/lib/footballInvitationMessage";
 import {
   getFootballOccurrenceBySlugOrId,
+  getFootballOccurrenceComments,
   getFootballRegularPlayers,
   getFootballSeriesBySlug,
   getFootballSignups,
@@ -26,12 +27,14 @@ import {
 } from "@/lib/footballRepository";
 import type {
   FootballOccurrence,
+  FootballOccurrenceComment,
   FootballRegularPlayer,
   FootballSeries,
   FootballSignup,
   FootballSignupStatus,
 } from "@/types/football";
 import { useAuth } from "@/hooks/useAuth";
+import { FootballDiscussion } from "./FootballDiscussion";
 import { FootballSignupLists } from "./FootballSignupLists";
 
 const DATE_TIME_FORMATTER = new Intl.DateTimeFormat("pl-PL", {
@@ -52,6 +55,7 @@ export function FootballOccurrencePage() {
   const [occurrence, setOccurrence] = useState<FootballOccurrence | null>(null);
   const [regularPlayers, setRegularPlayers] = useState<FootballRegularPlayer[]>([]);
   const [signups, setSignups] = useState<FootballSignup[]>([]);
+  const [occurrenceComments, setOccurrenceComments] = useState<FootballOccurrenceComment[]>([]);
   const [nickname, setNickname] = useState(() => localStorage.getItem(FOOTBALL_NICKNAME_KEY) ?? "");
   const [savingStatus, setSavingStatus] = useState<FootballSignupStatus | null>(null);
   const [busyNickname, setBusyNickname] = useState<string | null>(null);
@@ -75,14 +79,16 @@ export function FootballOccurrencePage() {
         setPhase("notfound");
         return;
       }
-      const [loadedRegulars, loadedSignups] = await Promise.all([
+      const [loadedRegulars, loadedSignups, loadedComments] = await Promise.all([
         getFootballRegularPlayers(loadedSeries.id),
         getFootballSignups(loadedOccurrence.id),
+        getFootballOccurrenceComments(loadedOccurrence.id),
       ]);
       setSeries(loadedSeries);
       setOccurrence(loadedOccurrence);
       setRegularPlayers(loadedRegulars);
       setSignups(loadedSignups);
+      setOccurrenceComments(loadedComments);
       setPhase("ready");
     } catch (error) {
       console.error(error);
@@ -138,6 +144,12 @@ export function FootballOccurrencePage() {
     if (!series || !occurrence) return "";
     return `${window.location.origin}/football/${series.public_slug}/${occurrence.public_slug}`;
   }, [series, occurrence]);
+
+  const refreshOccurrenceComments = useCallback(async () => {
+    if (!occurrence) return;
+    const next = await getFootballOccurrenceComments(occurrence.id);
+    setOccurrenceComments(next);
+  }, [occurrence]);
 
   const submitDecision = async (desiredStatus: "playing" | "not_playing") => {
     if (!occurrence || occurrence.status !== "open") return;
@@ -371,6 +383,12 @@ export function FootballOccurrencePage() {
           isAdmin={isAdmin}
           onAdminPromoteWaitlistToPlaying={handleAdminPromoteWaitlistToPlaying}
           onAdminDecision={handleAdminDecision}
+        />
+
+        <FootballDiscussion
+          occurrenceId={occurrence.id}
+          comments={occurrenceComments}
+          onCommentsRefresh={refreshOccurrenceComments}
         />
 
         {isAdmin && (
