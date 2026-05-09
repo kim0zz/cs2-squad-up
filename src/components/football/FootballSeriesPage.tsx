@@ -6,12 +6,19 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   getFootballOccurrences,
+  getFootballRegularPlayers,
   getFootballSeriesBySlug,
   getFootballSignupsForOccurrences,
+  replaceFootballRegularPlayers,
   updateFootballSeriesBasics,
 } from "@/lib/footballRepository";
 import { isFootballSeriesAdmin } from "@/lib/footballSeriesAdmin";
-import type { FootballOccurrence, FootballSeries, FootballSignup } from "@/types/football";
+import type {
+  FootballOccurrence,
+  FootballRegularPlayer,
+  FootballSeries,
+  FootballSignup,
+} from "@/types/football";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -46,6 +53,7 @@ export function FootballSeriesPage() {
   const [series, setSeries] = useState<FootballSeries | null>(null);
   const [occurrences, setOccurrences] = useState<FootballOccurrence[]>([]);
   const [signups, setSignups] = useState<FootballSignup[]>([]);
+  const [regularPlayers, setRegularPlayers] = useState<FootballRegularPlayer[]>([]);
   const [editOpen, setEditOpen] = useState(false);
   const [editTitle, setEditTitle] = useState("");
   const [editLocation, setEditLocation] = useState("");
@@ -53,6 +61,9 @@ export function FootballSeriesPage() {
   const [editDeadlineHours, setEditDeadlineHours] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [savingBasics, setSavingBasics] = useState(false);
+  const [editRegularsOpen, setEditRegularsOpen] = useState(false);
+  const [editRegularsText, setEditRegularsText] = useState("");
+  const [savingRegulars, setSavingRegulars] = useState(false);
 
   useEffect(() => {
     if (!slug) {
@@ -69,11 +80,15 @@ export function FootballSeriesPage() {
           setSeries(null);
           setOccurrences([]);
           setSignups([]);
+          setRegularPlayers([]);
           setPhase("notfound");
           return;
         }
 
-        const loadedOccurrences = await getFootballOccurrences(loadedSeries.id);
+        const [loadedOccurrences, loadedRegulars] = await Promise.all([
+          getFootballOccurrences(loadedSeries.id),
+          getFootballRegularPlayers(loadedSeries.id),
+        ]);
         if (!active) return;
         const listOccurrences = loadedOccurrences.filter(
           (occurrence) => occurrence.status === "open" || occurrence.status === "cancelled",
@@ -87,6 +102,7 @@ export function FootballSeriesPage() {
         setSeries(loadedSeries);
         setOccurrences(listOccurrences);
         setSignups(loadedSignups);
+        setRegularPlayers(loadedRegulars);
         setPhase("ready");
       } catch (error) {
         console.error(error);
@@ -94,6 +110,7 @@ export function FootballSeriesPage() {
         setSeries(null);
         setOccurrences([]);
         setSignups([]);
+        setRegularPlayers([]);
         setPhase("notfound");
       }
     })();
@@ -180,6 +197,37 @@ export function FootballSeriesPage() {
       toast.error("Nie udało się zapisać");
     } finally {
       setSavingBasics(false);
+    }
+  };
+
+  const syncRegularsFormFromState = (rows: FootballRegularPlayer[]) => {
+    setEditRegularsText(rows.map((r) => r.nickname).join("\n"));
+  };
+
+  const openRegularsEdit = () => {
+    syncRegularsFormFromState(regularPlayers);
+    setEditRegularsOpen(true);
+  };
+
+  const closeRegularsEdit = () => {
+    syncRegularsFormFromState(regularPlayers);
+    setEditRegularsOpen(false);
+  };
+
+  const saveRegulars = async () => {
+    if (!series) return;
+    const lines = editRegularsText.split(/\r?\n/);
+    setSavingRegulars(true);
+    try {
+      const updated = await replaceFootballRegularPlayers(series.id, lines);
+      setRegularPlayers(updated);
+      setEditRegularsOpen(false);
+      toast.success("Zapisano stałych graczy");
+    } catch (e) {
+      console.error(e);
+      toast.error("Nie udało się zapisać listy");
+    } finally {
+      setSavingRegulars(false);
     }
   };
 
@@ -348,6 +396,52 @@ export function FootballSeriesPage() {
                 </div>
               </div>
             )}
+
+            <div className="border-t border-border/60 pt-4 space-y-4">
+              {!editRegularsOpen ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="font-display uppercase tracking-wide"
+                  onClick={openRegularsEdit}
+                >
+                  Edytuj stałych graczy
+                </Button>
+              ) : (
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-regulars">Stali gracze</Label>
+                    <Textarea
+                      id="edit-regulars"
+                      value={editRegularsText}
+                      onChange={(e) => setEditRegularsText(e.target.value)}
+                      rows={6}
+                      className="bg-secondary/40 border-border/80 resize-y min-h-[120px] font-mono text-sm"
+                    />
+                    <p className="text-xs text-muted-foreground">Jeden nick w linii</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      disabled={savingRegulars}
+                      className="font-display uppercase tracking-wide"
+                      onClick={() => void saveRegulars()}
+                    >
+                      Zapisz stałych
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={savingRegulars}
+                      className="font-display uppercase tracking-wide"
+                      onClick={closeRegularsEdit}
+                    >
+                      Anuluj
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
           </Card>
         )}
 

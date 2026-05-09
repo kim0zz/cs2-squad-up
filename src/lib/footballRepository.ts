@@ -278,6 +278,39 @@ export async function getFootballRegularPlayers(
   return (data ?? []) as FootballRegularPlayer[];
 }
 
+/**
+ * Replace the full regular-player roster for a series. Does not touch signups.
+ * Nicknames are trimmed, empties dropped, duplicates removed (case-insensitive).
+ */
+export async function replaceFootballRegularPlayers(
+  seriesId: string,
+  nicknames: string[],
+): Promise<FootballRegularPlayer[]> {
+  const normalized = dedupeNicknames(nicknames);
+
+  const { error: delErr } = await supabase
+    .from("football_regular_players")
+    .delete()
+    .eq("series_id", seriesId);
+  if (delErr) throw delErr;
+
+  if (normalized.length === 0) {
+    return [];
+  }
+
+  const { data, error: insErr } = await supabase
+    .from("football_regular_players")
+    .insert(
+      normalized.map((nickname) => ({
+        series_id: seriesId,
+        nickname,
+      })),
+    )
+    .select();
+  if (insErr) throw insErr;
+  return (data ?? []) as FootballRegularPlayer[];
+}
+
 export async function getFootballSignups(occurrenceId: string): Promise<FootballSignup[]> {
   const { data, error } = await supabase
     .from("football_signups")
