@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { CreateFootballSeriesForm } from "@/components/football/CreateFootballSeriesForm";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 
@@ -25,19 +25,7 @@ const FootballNewPage = () => {
           </Link>
         </div>
 
-        <Card className="bg-gradient-card border-border/80 p-6 sm:p-8 space-y-6">
-          <div className="flex items-center gap-3">
-            <div className="size-10 rounded-md bg-gradient-primary grid place-items-center text-xl leading-none shadow-glow ring-1 ring-primary/50">
-              ⚽
-            </div>
-            <h1 className="font-display text-2xl sm:text-3xl font-bold uppercase tracking-wide leading-none">
-              Utwórz zbiórkę piłkarską
-            </h1>
-          </div>
-          <p className="text-muted-foreground leading-relaxed">
-            Formularz piłki będzie dostępny wkrótce.
-          </p>
-        </Card>
+        <CreateFootballSeriesForm />
       </div>
     </main>
   );
