@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
-import type { FootballOccurrence, FootballSignup } from "@/types/football";
+import type { FootballOccurrence, FootballRegularPlayer, FootballSignup } from "@/types/football";
 import { countPlaying } from "@/lib/footballRules";
 
 interface FootballOccurrencesListProps {
   occurrences: FootballOccurrence[];
   signups: FootballSignup[];
+  regularPlayers: FootballRegularPlayer[];
   maxPlayers: number;
   seriesSlug: string;
   adminToken: string | null;
@@ -22,6 +23,7 @@ const DATE_FORMATTER = new Intl.DateTimeFormat("pl-PL", {
 export function FootballOccurrencesList({
   occurrences,
   signups,
+  regularPlayers,
   maxPlayers,
   seriesSlug,
   adminToken,
@@ -39,6 +41,12 @@ export function FootballOccurrencesList({
       {occurrences.map((occurrence) => {
         const isCancelled = occurrence.status === "cancelled";
         const occurrenceSignups = signups.filter((s) => s.occurrence_id === occurrence.id);
+        const decidedNickSet = new Set(
+          occurrenceSignups.map((s) => s.nickname.toLowerCase()),
+        );
+        const undecidedRegularsCount = regularPlayers.filter(
+          (r) => !decidedNickSet.has(r.nickname.toLowerCase()),
+        ).length;
         const playingCount = countPlaying(occurrenceSignups);
         const spotsLeft = Math.max(0, maxPlayers - playingCount);
         const statusText = spotsLeft === 0 ? "Komplet" : `Brakuje ${spotsLeft}`;
@@ -65,6 +73,11 @@ export function FootballOccurrencesList({
                 {playingCount}/{maxPlayers}
               </p>
               <p className="text-sm font-medium">{statusText}</p>
+              {undecidedRegularsCount > 0 && (
+                <p className="text-xs text-muted-foreground/90">
+                  Stali bez decyzji: {undecidedRegularsCount}
+                </p>
+              )}
             </div>
             <Link
               to={targetUrl}

@@ -452,6 +452,7 @@ export function FootballSeriesPage() {
           <FootballOccurrencesList
             occurrences={occurrences}
             signups={signups}
+            regularPlayers={regularPlayers}
             maxPlayers={series.max_players}
             seriesSlug={series.public_slug}
             adminToken={adminToken}
