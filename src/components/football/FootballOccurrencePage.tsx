@@ -55,6 +55,7 @@ export function FootballOccurrencePage() {
   const [savingStatus, setSavingStatus] = useState<FootballSignupStatus | null>(null);
   const [busyNickname, setBusyNickname] = useState<string | null>(null);
   const [updatingOccurrenceStatus, setUpdatingOccurrenceStatus] = useState(false);
+  const [manualSignupOpen, setManualSignupOpen] = useState(false);
 
   const loadData = useCallback(async () => {
     if (!slug || !occurrenceId) {
@@ -304,11 +305,6 @@ export function FootballOccurrencePage() {
           <h1 className="font-display text-2xl font-bold uppercase tracking-wide sm:text-3xl">
             {series.title}
           </h1>
-          {series.description?.trim() && (
-            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
-              {series.description}
-            </p>
-          )}
           <p className="text-sm">
             <span className="text-muted-foreground">Termin:</span>{" "}
             {DATE_TIME_FORMATTER.format(new Date(occurrence.starts_at))}
@@ -316,58 +312,35 @@ export function FootballOccurrencePage() {
           <p className="text-sm">
             <span className="text-muted-foreground">Miejsce:</span> {series.location}
           </p>
+          {series.description?.trim() && (
+            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
+              {series.description}
+            </p>
+          )}
           <p className="text-sm">
             <span className="text-muted-foreground">Skład:</span> {playingCount}/{series.max_players}
           </p>
           <p className="text-sm font-medium">{capacityText}</p>
+          <p className="text-sm text-muted-foreground border-t border-border/60 pt-3">
+            {isCancelled ? (
+              "Zapisy na ten termin są zamknięte."
+            ) : regularDeadlineOpen && deadlineDate ? (
+              <>
+                Stali mają pierwszeństwo do {DATE_TIME_FORMATTER.format(deadlineDate)}
+              </>
+            ) : (
+              "Zapisy otwarte dla wszystkich"
+            )}
+          </p>
         </Card>
 
-        <Card className="space-y-4 border-border/80 bg-gradient-card p-6">
-          {isCancelled && (
-            <p className="text-sm text-muted-foreground">Zapisy na ten termin są zamknięte.</p>
-          )}
-          {!isCancelled && (
-            <>
-              <p className="text-sm">
-                {regularDeadlineOpen && deadlineDate
-                  ? `Stali mają pierwszeństwo do ${DATE_TIME_FORMATTER.format(deadlineDate)}`
-                  : "Zapisy otwarte dla wszystkich"}
-              </p>
-
-              <div className="space-y-2">
-                <Label htmlFor="football-nickname">Nick gracza</Label>
-                <Input
-                  id="football-nickname"
-                  value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
-                  maxLength={32}
-                  placeholder="Twój nick"
-                  className="bg-secondary/40 border-border/80"
-                />
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  disabled={savingStatus !== null}
-                  onClick={() => void submitDecision("playing")}
-                  className="font-display uppercase tracking-wide"
-                >
-                  Gram
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={savingStatus !== null}
-                  onClick={() => void submitDecision("not_playing")}
-                  className="font-display uppercase tracking-wide"
-                >
-                  Nie gram
-                </Button>
-              </div>
-            </>
-          )}
-        </Card>
+        <FootballSignupLists
+          signups={signups}
+          regularPlayers={regularPlayers}
+          busyNickname={busyNickname}
+          signupsDisabled={isCancelled}
+          onAdminDecision={handleAdminDecision}
+        />
 
         {isAdmin && (
           <Card className="space-y-3 border-border/80 bg-gradient-card p-6">
@@ -399,15 +372,62 @@ export function FootballOccurrencePage() {
           </Card>
         )}
 
-        <Card className="border-border/80 bg-gradient-card p-6">
-          <FootballSignupLists
-            signups={signups}
-            regularPlayers={regularPlayers}
-            busyNickname={busyNickname}
-            signupsDisabled={isCancelled}
-            onAdminDecision={handleAdminDecision}
-          />
-        </Card>
+        {!isCancelled && (
+          <Card className="space-y-4 border-border/80 bg-gradient-card p-6">
+            {!manualSignupOpen ? (
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full font-display uppercase tracking-wide sm:w-auto"
+                onClick={() => setManualSignupOpen(true)}
+              >
+                Dopisz gracza spoza listy
+              </Button>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="football-nickname">Nick gracza</Label>
+                  <Input
+                    id="football-nickname"
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    maxLength={32}
+                    placeholder="Twój nick"
+                    className="bg-secondary/40 border-border/80"
+                  />
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    disabled={savingStatus !== null}
+                    onClick={() => void submitDecision("playing")}
+                    className="font-display uppercase tracking-wide"
+                  >
+                    Gram
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={savingStatus !== null}
+                    onClick={() => void submitDecision("not_playing")}
+                    className="font-display uppercase tracking-wide"
+                  >
+                    Nie gram
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="font-display uppercase tracking-wide text-muted-foreground"
+                    onClick={() => setManualSignupOpen(false)}
+                  >
+                    Zwiń
+                  </Button>
+                </div>
+              </>
+            )}
+          </Card>
+        )}
       </div>
     </main>
   );
