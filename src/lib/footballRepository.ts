@@ -12,6 +12,7 @@ import type {
   FootballSeries,
   FootballSignup,
   FootballSignupStatus,
+  UpdateFootballSeriesBasicsInput,
   UpsertFootballSignupInput,
 } from "@/types/football";
 
@@ -177,6 +178,26 @@ export async function getFootballSeriesBySlug(slug: string): Promise<FootballSer
     .maybeSingle();
   if (error) throw error;
   return data as FootballSeries | null;
+}
+
+export async function updateFootballSeriesBasics(
+  seriesId: string,
+  input: UpdateFootballSeriesBasicsInput,
+): Promise<FootballSeries> {
+  const { data, error } = await supabase
+    .from("football_series")
+    .update({
+      title: input.title,
+      location: input.location,
+      max_players: input.max_players,
+      regular_deadline_hours_before: input.regular_deadline_hours_before,
+      description: input.description,
+    })
+    .eq("id", seriesId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data as FootballSeries;
 }
 
 export async function getFootballOccurrences(seriesId: string): Promise<FootballOccurrence[]> {

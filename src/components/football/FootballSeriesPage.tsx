@@ -1,13 +1,26 @@
-import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   getFootballOccurrences,
   getFootballSeriesBySlug,
   getFootballSignupsForOccurrences,
+  updateFootballSeriesBasics,
 } from "@/lib/footballRepository";
+import { isFootballSeriesAdmin } from "@/lib/footballSeriesAdmin";
 import type { FootballOccurrence, FootballSeries, FootballSignup } from "@/types/football";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 import { FootballOccurrencesList } from "./FootballOccurrencesList";
+
+const MIN_MAX_PLAYERS = 4;
+const MAX_MAX_PLAYERS = 30;
+const MIN_DEADLINE = 1;
+const MAX_DEADLINE = 168;
 
 const WEEKDAY_LABELS: ReadonlyArray<string> = [
   "Niedziela",
@@ -28,10 +41,18 @@ function formatDeadline(hours: number): string {
 export function FootballSeriesPage() {
   const { slug } = useParams<{ slug: string }>();
   const [searchParams] = useSearchParams();
+  const { user } = useAuth();
   const [phase, setPhase] = useState<"loading" | "notfound" | "ready">("loading");
   const [series, setSeries] = useState<FootballSeries | null>(null);
   const [occurrences, setOccurrences] = useState<FootballOccurrence[]>([]);
   const [signups, setSignups] = useState<FootballSignup[]>([]);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editLocation, setEditLocation] = useState("");
+  const [editMaxPlayers, setEditMaxPlayers] = useState("");
+  const [editDeadlineHours, setEditDeadlineHours] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [savingBasics, setSavingBasics] = useState(false);
 
   useEffect(() => {
     if (!slug) {
@@ -91,11 +112,76 @@ export function FootballSeriesPage() {
   }, [phase, series]);
 
   const adminToken = searchParams.get("admin");
+  const isAdmin = Boolean(series && isFootballSeriesAdmin(series, user, adminToken));
   const weekdayTimeLabel = useMemo(() => {
     if (!series) return "";
     const weekday = WEEKDAY_LABELS[series.weekday] ?? "Nieznany dzień";
     return `${weekday}, ${series.start_time}`;
   }, [series]);
+
+  const syncEditFormFromSeries = (s: FootballSeries) => {
+    setEditTitle(s.title);
+    setEditLocation(s.location);
+    setEditMaxPlayers(String(s.max_players));
+    setEditDeadlineHours(String(s.regular_deadline_hours_before));
+    setEditDescription(s.description ?? "");
+  };
+
+  const openEdit = () => {
+    if (series) syncEditFormFromSeries(series);
+    setEditOpen(true);
+  };
+
+  const closeEdit = () => {
+    if (series) syncEditFormFromSeries(series);
+    setEditOpen(false);
+  };
+
+  const saveBasics = async () => {
+    if (!series) return;
+    const errors: string[] = [];
+    if (!editTitle.trim()) errors.push("Podaj nazwę zbiórki");
+    if (!editLocation.trim()) errors.push("Podaj miejsce");
+    const maxNum = Number.parseInt(editMaxPlayers, 10);
+    if (
+      !Number.isFinite(maxNum) ||
+      maxNum < MIN_MAX_PLAYERS ||
+      maxNum > MAX_MAX_PLAYERS
+    ) {
+      errors.push(`Liczba miejsc musi być między ${MIN_MAX_PLAYERS} a ${MAX_MAX_PLAYERS}`);
+    }
+    const deadlineNum = Number.parseInt(editDeadlineHours, 10);
+    if (
+      !Number.isFinite(deadlineNum) ||
+      deadlineNum < MIN_DEADLINE ||
+      deadlineNum > MAX_DEADLINE
+    ) {
+      errors.push(`Deadline musi być między ${MIN_DEADLINE} a ${MAX_DEADLINE} godzin`);
+    }
+    if (errors.length > 0) {
+      toast.error(errors[0]);
+      return;
+    }
+
+    setSavingBasics(true);
+    try {
+      const updated = await updateFootballSeriesBasics(series.id, {
+        title: editTitle.trim(),
+        location: editLocation.trim(),
+        max_players: maxNum,
+        regular_deadline_hours_before: deadlineNum,
+        description: editDescription.trim() || null,
+      });
+      setSeries(updated);
+      setEditOpen(false);
+      toast.success("Zapisano zmiany");
+    } catch (e) {
+      console.error(e);
+      toast.error("Nie udało się zapisać");
+    } finally {
+      setSavingBasics(false);
+    }
+  };
 
   if (phase === "loading") {
     return (
@@ -161,6 +247,104 @@ export function FootballSeriesPage() {
             </p>
           </div>
         </Card>
+
+        {isAdmin && (
+          <Card className="space-y-4 border-border/80 bg-gradient-card p-6">
+            <h2 className="font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
+              Administracja
+            </h2>
+            {!editOpen ? (
+              <Button
+                type="button"
+                variant="outline"
+                className="font-display uppercase tracking-wide"
+                onClick={openEdit}
+              >
+                Edytuj dane zbiórki
+              </Button>
+            ) : (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-series-title">Nazwa zbiórki</Label>
+                  <Input
+                    id="edit-series-title"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    maxLength={120}
+                    className="bg-secondary/40 border-border/80"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-series-location">Miejsce</Label>
+                  <Input
+                    id="edit-series-location"
+                    value={editLocation}
+                    onChange={(e) => setEditLocation(e.target.value)}
+                    maxLength={160}
+                    className="bg-secondary/40 border-border/80"
+                  />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-series-max">Liczba miejsc</Label>
+                    <Input
+                      id="edit-series-max"
+                      type="number"
+                      inputMode="numeric"
+                      min={MIN_MAX_PLAYERS}
+                      max={MAX_MAX_PLAYERS}
+                      value={editMaxPlayers}
+                      onChange={(e) => setEditMaxPlayers(e.target.value)}
+                      className="bg-secondary/40 border-border/80"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-series-deadline">Deadline stałych (godziny przed grą)</Label>
+                    <Input
+                      id="edit-series-deadline"
+                      type="number"
+                      inputMode="numeric"
+                      min={MIN_DEADLINE}
+                      max={MAX_DEADLINE}
+                      value={editDeadlineHours}
+                      onChange={(e) => setEditDeadlineHours(e.target.value)}
+                      className="bg-secondary/40 border-border/80"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-series-desc">Opis</Label>
+                  <Textarea
+                    id="edit-series-desc"
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    rows={3}
+                    className="bg-secondary/40 border-border/80 resize-y min-h-[80px]"
+                  />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    disabled={savingBasics}
+                    className="font-display uppercase tracking-wide"
+                    onClick={() => void saveBasics()}
+                  >
+                    Zapisz
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={savingBasics}
+                    className="font-display uppercase tracking-wide"
+                    onClick={closeEdit}
+                  >
+                    Anuluj
+                  </Button>
+                </div>
+              </div>
+            )}
+          </Card>
+        )}
 
         <Card className="space-y-4 border-border/80 bg-gradient-card p-6">
           <h2 className="font-display text-lg font-bold uppercase tracking-wide">

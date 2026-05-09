@@ -46,6 +46,14 @@ export interface FootballSignup {
   updated_at: string;
 }
 
+export interface UpdateFootballSeriesBasicsInput {
+  title: string;
+  location: string;
+  max_players: number;
+  regular_deadline_hours_before: number;
+  description: string | null;
+}
+
 export interface CreateFootballSeriesInput {
   title: string;
   location: string;
