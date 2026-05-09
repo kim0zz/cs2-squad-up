@@ -290,6 +290,16 @@ export async function getFootballSeriesList(): Promise<FootballSeries[]> {
   return (data ?? []) as FootballSeries[];
 }
 
+export async function getMyFootballSeries(userId: string): Promise<FootballSeries[]> {
+  const { data, error } = await supabase
+    .from("football_series")
+    .select("*")
+    .eq("created_by", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as FootballSeries[];
+}
+
 /**
  * Resolve and persist a signup decision for an occurrence.
  * Status is computed via `resolveFootballSignupStatus` so the priority/waitlist

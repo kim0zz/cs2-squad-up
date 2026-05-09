@@ -14,6 +14,7 @@ import FootballPage from "./pages/FootballPage.tsx";
 import FootballNewPage from "./pages/FootballNewPage.tsx";
 import FootballSeriesPage from "./pages/FootballSeriesPage.tsx";
 import FootballOccurrencePage from "./pages/FootballOccurrencePage.tsx";
+import MyFootballPage from "./pages/MyFootballPage.tsx";
 import EventRoute from "./pages/EventRoute.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -29,6 +30,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/my" element={<MyFootballPage />} />
             <Route path="/cs2" element={<Cs2Page />} />
             <Route path="/padel" element={<PadelPage />} />
             <Route path="/padel/new" element={<PadelNewPage />} />
