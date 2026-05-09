@@ -46,6 +46,14 @@ export interface FootballSignup {
   updated_at: string;
 }
 
+export interface FootballOccurrenceComment {
+  id: string;
+  occurrence_id: string;
+  nickname: string;
+  body: string;
+  created_at: string;
+}
+
 export interface UpdateFootballSeriesBasicsInput {
   title: string;
   location: string;

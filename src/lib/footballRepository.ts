@@ -7,6 +7,7 @@ import {
 import type {
   CreateFootballSeriesInput,
   FootballOccurrence,
+  FootballOccurrenceComment,
   FootballOccurrenceStatus,
   FootballRegularPlayer,
   FootballSeries,
@@ -319,6 +320,45 @@ export async function getFootballSignups(occurrenceId: string): Promise<Football
     .order("created_at", { ascending: true });
   if (error) throw error;
   return (data ?? []) as FootballSignup[];
+}
+
+export async function getFootballOccurrenceComments(
+  occurrenceId: string,
+): Promise<FootballOccurrenceComment[]> {
+  const { data, error } = await supabase
+    .from("football_occurrence_comments")
+    .select("*")
+    .eq("occurrence_id", occurrenceId)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as FootballOccurrenceComment[];
+}
+
+export async function addFootballOccurrenceComment(
+  occurrenceId: string,
+  nickname: string,
+  body: string,
+): Promise<FootballOccurrenceComment> {
+  const trimmedNick = nickname.trim();
+  const trimmedBody = body.trim();
+  if (!trimmedNick || trimmedNick.length > 80) {
+    throw new Error("Nickname must be 1–80 characters");
+  }
+  if (!trimmedBody || trimmedBody.length > 1000) {
+    throw new Error("Message must be 1–1000 characters");
+  }
+
+  const { data, error } = await supabase
+    .from("football_occurrence_comments")
+    .insert({
+      occurrence_id: occurrenceId,
+      nickname: trimmedNick,
+      body: trimmedBody,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return data as FootballOccurrenceComment;
 }
 
 export async function getFootballSignupsForOccurrences(

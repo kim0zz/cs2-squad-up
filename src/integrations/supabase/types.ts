@@ -359,6 +359,38 @@ export type Database = {
           },
         ]
       }
+      football_occurrence_comments: {
+        Row: {
+          id: string
+          occurrence_id: string
+          nickname: string
+          body: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          occurrence_id: string
+          nickname: string
+          body: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          occurrence_id?: string
+          nickname?: string
+          body?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "football_occurrence_comments_occurrence_id_fkey"
+            columns: ["occurrence_id"]
+            isOneToOne: false
+            referencedRelation: "football_occurrences"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
