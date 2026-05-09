@@ -17,7 +17,7 @@ const WEEKDAY_LABELS: ReadonlyArray<string> = [
 ];
 
 const MyFootballPage = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
   const [seriesList, setSeriesList] = useState<FootballSeries[]>([]);
   const [listLoading, setListLoading] = useState(false);
 
@@ -81,9 +81,19 @@ const MyFootballPage = () => {
           </Card>
         ) : (
           <>
-            <h1 className="font-display text-2xl sm:text-3xl font-bold uppercase tracking-wide">
-              Moje zbiórki
-            </h1>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <h1 className="font-display text-2xl sm:text-3xl font-bold uppercase tracking-wide">
+                Moje zbiórki
+              </h1>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full shrink-0 font-display uppercase tracking-wider sm:w-auto"
+                onClick={() => void signOut()}
+              >
+                Wyloguj
+              </Button>
+            </div>
 
             {listLoading ? (
               <Card className="border-border/80 bg-gradient-card p-6">

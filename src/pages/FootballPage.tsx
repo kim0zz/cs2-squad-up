@@ -78,12 +78,21 @@ const FootballPage = () => {
                 Zbiórki piłkarskie
               </h1>
             </div>
-            <Button
-              asChild
-              className="h-11 sm:h-12 font-display text-base uppercase tracking-wider"
-            >
-              <Link to="/football/new">Utwórz zbiórkę</Link>
-            </Button>
+            <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:justify-end">
+              <Button
+                asChild
+                variant="outline"
+                className="h-11 min-w-0 flex-1 font-display text-base uppercase tracking-wider sm:h-12 sm:flex-initial"
+              >
+                <Link to="/my">Moje zbiórki</Link>
+              </Button>
+              <Button
+                asChild
+                className="h-11 min-w-0 flex-1 font-display text-base uppercase tracking-wider sm:h-12 sm:flex-initial"
+              >
+                <Link to="/football/new">Utwórz zbiórkę</Link>
+              </Button>
+            </div>
           </div>
 
           {phase === "loading" ? (

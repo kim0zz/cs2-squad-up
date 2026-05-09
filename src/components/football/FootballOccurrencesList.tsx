@@ -35,7 +35,7 @@ export function FootballOccurrencesList({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {occurrences.map((occurrence) => {
         const isCancelled = occurrence.status === "cancelled";
         const occurrenceSignups = signups.filter((s) => s.occurrence_id === occurrence.id);
@@ -48,7 +48,7 @@ export function FootballOccurrencesList({
         return (
           <div
             key={occurrence.id}
-            className={`flex flex-col gap-3 rounded-lg border border-border/80 bg-secondary/30 p-4 sm:flex-row sm:items-center sm:justify-between ${
+            className={`flex flex-col gap-3 rounded-xl border border-border/90 bg-card/85 p-4 shadow-md shadow-black/25 ring-1 ring-white/5 sm:flex-row sm:items-center sm:justify-between ${
               isCancelled ? "opacity-60" : ""
             }`}
           >
