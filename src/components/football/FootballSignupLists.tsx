@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import type { ReactNode } from "react";
 import type { FootballRegularPlayer, FootballSignup } from "@/types/football";
 
 interface FootballSignupListsProps {
@@ -12,6 +13,34 @@ interface FootballSignupListsProps {
 
 function nickSort(a: { nickname: string }, b: { nickname: string }): number {
   return a.nickname.localeCompare(b.nickname, "pl", { sensitivity: "base" });
+}
+
+function StatusIconButton({
+  label,
+  disabled,
+  onClick,
+  children,
+}: {
+  label: string;
+  disabled: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      disabled={disabled}
+      onClick={onClick}
+      aria-label={label}
+      className="h-7 w-7 shrink-0 text-muted-foreground hover:bg-secondary/80 hover:text-foreground disabled:opacity-40"
+    >
+      <span className="flex size-full items-center justify-center text-base leading-none" aria-hidden>
+        {children}
+      </span>
+    </Button>
+  );
 }
 
 export function FootballSignupLists({
@@ -45,10 +74,17 @@ export function FootballSignupLists({
         {playing.length === 0 ? (
           <p className="text-sm text-muted-foreground">Brak</p>
         ) : (
-          <ul className="space-y-1.5 text-sm">
+          <ul className="divide-y divide-border/50 text-sm">
             {playing.map((signup) => (
-              <li key={signup.id} className="break-words">
-                {signup.nickname}
+              <li key={signup.id} className="flex items-start gap-2 py-1 first:pt-0 last:pb-0">
+                <span className="min-w-0 flex-1 break-words leading-tight">{signup.nickname}</span>
+                <StatusIconButton
+                  label="Nie gra"
+                  disabled={signupsDisabled || busyNickname === signup.nickname}
+                  onClick={() => void onAdminDecision(signup.nickname, "not_playing")}
+                >
+                  ×
+                </StatusIconButton>
               </li>
             ))}
           </ul>
@@ -62,10 +98,17 @@ export function FootballSignupLists({
         {waitlist.length === 0 ? (
           <p className="text-sm text-muted-foreground">Brak</p>
         ) : (
-          <ul className="space-y-1.5 text-sm">
+          <ul className="divide-y divide-border/50 text-sm">
             {waitlist.map((signup) => (
-              <li key={signup.id} className="break-words">
-                {signup.nickname}
+              <li key={signup.id} className="flex items-start gap-2 py-1 first:pt-0 last:pb-0">
+                <span className="min-w-0 flex-1 break-words leading-tight">{signup.nickname}</span>
+                <StatusIconButton
+                  label="Nie gra"
+                  disabled={signupsDisabled || busyNickname === signup.nickname}
+                  onClick={() => void onAdminDecision(signup.nickname, "not_playing")}
+                >
+                  ×
+                </StatusIconButton>
               </li>
             ))}
           </ul>
@@ -79,10 +122,17 @@ export function FootballSignupLists({
         {notPlaying.length === 0 ? (
           <p className="text-sm text-muted-foreground">Brak</p>
         ) : (
-          <ul className="space-y-1.5 text-sm">
+          <ul className="divide-y divide-border/50 text-sm">
             {notPlaying.map((signup) => (
-              <li key={signup.id} className="break-words">
-                {signup.nickname}
+              <li key={signup.id} className="flex items-start gap-2 py-1 first:pt-0 last:pb-0">
+                <span className="min-w-0 flex-1 break-words leading-tight">{signup.nickname}</span>
+                <StatusIconButton
+                  label="Gra"
+                  disabled={signupsDisabled || busyNickname === signup.nickname}
+                  onClick={() => void onAdminDecision(signup.nickname, "playing")}
+                >
+                  ✓
+                </StatusIconButton>
               </li>
             ))}
           </ul>
@@ -97,34 +147,25 @@ export function FootballSignupLists({
         {regularWithoutDecision.length === 0 ? (
           <p className="text-sm text-muted-foreground">Brak</p>
         ) : (
-          <ul className="space-y-3 text-sm">
+          <ul className="divide-y divide-border/50 text-sm">
             {regularWithoutDecision.map((regular) => (
-              <li
-                key={regular.id}
-                className="flex flex-row items-start justify-between gap-3 rounded-md border border-border/70 bg-secondary/25 px-3 py-3"
-              >
-                <span className="min-w-0 flex-1 break-words leading-snug">{regular.nickname}</span>
-                <div className="flex shrink-0 flex-col gap-2 self-start">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
+              <li key={regular.id} className="flex items-start gap-2 py-1 first:pt-0 last:pb-0">
+                <span className="min-w-0 flex-1 break-words leading-tight">{regular.nickname}</span>
+                <div className="flex shrink-0 items-start gap-0.5 self-start">
+                  <StatusIconButton
+                    label="Gra"
                     disabled={signupsDisabled || busyNickname === regular.nickname}
                     onClick={() => void onAdminDecision(regular.nickname, "playing")}
-                    className="w-[5.5rem] font-display uppercase tracking-wide text-xs sm:text-sm"
                   >
-                    Gram
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
+                    ✓
+                  </StatusIconButton>
+                  <StatusIconButton
+                    label="Nie gra"
                     disabled={signupsDisabled || busyNickname === regular.nickname}
                     onClick={() => void onAdminDecision(regular.nickname, "not_playing")}
-                    className="w-[5.5rem] font-display uppercase tracking-wide text-xs sm:text-sm"
                   >
-                    Nie gra
-                  </Button>
+                    ×
+                  </StatusIconButton>
                 </div>
               </li>
             ))}
