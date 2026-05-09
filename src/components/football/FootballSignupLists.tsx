@@ -4,7 +4,6 @@ import type { FootballRegularPlayer, FootballSignup } from "@/types/football";
 interface FootballSignupListsProps {
   signups: FootballSignup[];
   regularPlayers: FootballRegularPlayer[];
-  isAdmin: boolean;
   busyNickname: string | null;
   onAdminDecision: (nickname: string, desiredStatus: "playing" | "not_playing") => Promise<void>;
 }
@@ -16,7 +15,6 @@ function nickSort(a: { nickname: string }, b: { nickname: string }): number {
 export function FootballSignupLists({
   signups,
   regularPlayers,
-  isAdmin,
   busyNickname,
   onAdminDecision,
 }: FootballSignupListsProps) {
@@ -80,6 +78,7 @@ export function FootballSignupLists({
         <h3 className="font-display text-sm uppercase tracking-wide text-muted-foreground">
           Stali bez decyzji
         </h3>
+        <p className="text-xs text-muted-foreground">Stały dał znać? Oznacz go szybko.</p>
         {regularWithoutDecision.length === 0 ? (
           <p className="text-sm text-muted-foreground">Brak</p>
         ) : (
@@ -90,30 +89,28 @@ export function FootballSignupLists({
                 className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-border/70 bg-secondary/25 px-3 py-2"
               >
                 <span>{regular.nickname}</span>
-                {isAdmin && (
-                  <div className="flex items-center gap-2">
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      disabled={busyNickname === regular.nickname}
-                      onClick={() => void onAdminDecision(regular.nickname, "playing")}
-                      className="font-display uppercase tracking-wide"
-                    >
-                      Gram
-                    </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      disabled={busyNickname === regular.nickname}
-                      onClick={() => void onAdminDecision(regular.nickname, "not_playing")}
-                      className="font-display uppercase tracking-wide"
-                    >
-                      Nie gra
-                    </Button>
-                  </div>
-                )}
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    disabled={busyNickname === regular.nickname}
+                    onClick={() => void onAdminDecision(regular.nickname, "playing")}
+                    className="font-display uppercase tracking-wide"
+                  >
+                    Gram
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    disabled={busyNickname === regular.nickname}
+                    onClick={() => void onAdminDecision(regular.nickname, "not_playing")}
+                    className="font-display uppercase tracking-wide"
+                  >
+                    Nie gra
+                  </Button>
+                </div>
               </li>
             ))}
           </ul>

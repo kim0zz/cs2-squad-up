@@ -92,7 +92,7 @@ export function FootballOccurrencePage() {
   }, [phase, series, occurrence]);
 
   const adminToken = searchParams.get("admin");
-  const isAdmin = Boolean(series && adminToken && adminToken === series.admin_token);
+  const hasValidAdminToken = Boolean(series && adminToken && adminToken === series.admin_token);
   const seriesBackLink = useMemo(() => {
     if (!slug) return "/football";
     if (!adminToken) return `/football/${slug}`;
@@ -143,7 +143,7 @@ export function FootballOccurrencePage() {
     regularNickname: string,
     desiredStatus: "playing" | "not_playing",
   ) => {
-    if (!occurrence || !isAdmin) return;
+    if (!occurrence) return;
     setBusyNickname(regularNickname);
     try {
       await upsertFootballSignup({
@@ -271,10 +271,15 @@ export function FootballOccurrencePage() {
           <FootballSignupLists
             signups={signups}
             regularPlayers={regularPlayers}
-            isAdmin={isAdmin}
             busyNickname={busyNickname}
             onAdminDecision={handleAdminDecision}
           />
+          {hasValidAdminToken && (
+            <p className="mt-4 text-xs text-muted-foreground">
+              Tryb admin aktywny. Dodatkowe akcje administracyjne pojawią się tutaj w kolejnych
+              krokach.
+            </p>
+          )}
         </Card>
       </div>
     </main>
