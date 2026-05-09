@@ -194,6 +194,19 @@ export async function getFootballSignups(occurrenceId: string): Promise<Football
   return (data ?? []) as FootballSignup[];
 }
 
+export async function getFootballSignupsForOccurrences(
+  occurrenceIds: string[],
+): Promise<FootballSignup[]> {
+  if (occurrenceIds.length === 0) return [];
+  const { data, error } = await supabase
+    .from("football_signups")
+    .select("*")
+    .in("occurrence_id", occurrenceIds)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as FootballSignup[];
+}
+
 export async function getFootballSeriesList(): Promise<FootballSeries[]> {
   const { data, error } = await supabase
     .from("football_series")
