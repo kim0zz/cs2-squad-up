@@ -31,8 +31,8 @@ const App = () => (
           <Route path="/padel/:slug" element={<PadelGatheringPage />} />
           <Route path="/football" element={<FootballPage />} />
           <Route path="/football/new" element={<FootballNewPage />} />
-          <Route path="/football/:slug" element={<FootballSeriesPage />} />
           <Route path="/football/:slug/:occurrenceId" element={<FootballOccurrencePage />} />
+          <Route path="/football/:slug" element={<FootballSeriesPage />} />
           <Route path="/e/:slug" element={<EventRoute />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
