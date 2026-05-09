@@ -11,6 +11,10 @@ import {
   isRegularDeadlineOpen,
 } from "@/lib/footballRules";
 import {
+  buildFootballInvitationMessage,
+  buildFootballRegularReminderMessage,
+} from "@/lib/footballInvitationMessage";
+import {
   getFootballOccurrenceById,
   getFootballRegularPlayers,
   getFootballSeriesBySlug,
@@ -106,10 +110,21 @@ export function FootballOccurrencePage() {
     series && occurrence
       ? isRegularDeadlineOpen(occurrence.starts_at, series.regular_deadline_hours_before)
       : false;
+  const undecidedRegularNicknames = useMemo(() => {
+    const decidedSet = new Set(signups.map((signup) => signup.nickname.toLowerCase()));
+    return regularPlayers
+      .filter((regular) => !decidedSet.has(regular.nickname.toLowerCase()))
+      .map((regular) => regular.nickname)
+      .sort((a, b) => a.localeCompare(b, "pl", { sensitivity: "base" }));
+  }, [regularPlayers, signups]);
   const deadlineDate = useMemo(() => {
     if (!series || !occurrence) return null;
     const startMs = new Date(occurrence.starts_at).getTime();
     return new Date(startMs - series.regular_deadline_hours_before * 60 * 60 * 1000);
+  }, [series, occurrence]);
+  const cleanOccurrenceUrl = useMemo(() => {
+    if (!series || !occurrence) return "";
+    return `${window.location.origin}/football/${series.public_slug}/${occurrence.id}`;
   }, [series, occurrence]);
 
   const submitDecision = async (desiredStatus: "playing" | "not_playing") => {
@@ -162,6 +177,31 @@ export function FootballOccurrencePage() {
     }
   };
 
+  const copyInvitation = async () => {
+    if (!series || !occurrence) return;
+    const text = buildFootballInvitationMessage({
+      series,
+      occurrence,
+      location: series.location,
+      playingCount,
+      maxPlayers: series.max_players,
+      url: cleanOccurrenceUrl,
+    });
+    await navigator.clipboard.writeText(text);
+    toast.success("Zaproszenie skopiowane");
+  };
+
+  const copyRegularReminder = async () => {
+    if (!series || !occurrence || undecidedRegularNicknames.length === 0) return;
+    const text = buildFootballRegularReminderMessage({
+      title: series.title,
+      undecidedRegularNicknames,
+      url: cleanOccurrenceUrl,
+    });
+    await navigator.clipboard.writeText(text);
+    toast.success("Przypominajka skopiowana");
+  };
+
   if (phase === "loading") {
     return (
       <main className="min-h-screen">
@@ -208,6 +248,24 @@ export function FootballOccurrencePage() {
           >
             ← Cykl
           </Link>
+          <Button
+            type="button"
+            variant="outline"
+            className="font-display uppercase tracking-wide"
+            onClick={() => void copyInvitation()}
+          >
+            Kopiuj zaproszenie
+          </Button>
+          {undecidedRegularNicknames.length > 0 && (
+            <Button
+              type="button"
+              variant="outline"
+              className="font-display uppercase tracking-wide"
+              onClick={() => void copyRegularReminder()}
+            >
+              Kopiuj przypominajkę dla stałych
+            </Button>
+          )}
         </div>
 
         <Card className="space-y-3 border-border/80 bg-gradient-card p-6 sm:p-8">
