@@ -7,6 +7,7 @@ import {
 import type {
   CreateFootballSeriesInput,
   FootballOccurrence,
+  FootballOccurrenceStatus,
   FootballRegularPlayer,
   FootballSeries,
   FootballSignup,
@@ -218,6 +219,20 @@ export async function getFootballOccurrenceBySlugOrId(
     return getFootballOccurrenceById(occurrenceSlugOrId);
   }
   return null;
+}
+
+export async function updateFootballOccurrenceStatus(
+  occurrenceId: string,
+  status: FootballOccurrenceStatus,
+): Promise<FootballOccurrence> {
+  const { data, error } = await supabase
+    .from("football_occurrences")
+    .update({ status })
+    .eq("id", occurrenceId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data as FootballOccurrence;
 }
 
 export async function getFootballRegularPlayers(

@@ -1,3 +1,4 @@
+import { OrganizerAuthNav } from "@/components/OrganizerAuthNav";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Crosshair } from "lucide-react";
@@ -12,6 +13,9 @@ const HomePage = () => {
   return (
     <main className="min-h-screen">
       <div className="container max-w-5xl px-4 py-12 sm:py-14">
+        <div className="mb-6 flex justify-end">
+          <OrganizerAuthNav />
+        </div>
         <header className="text-center mb-10 sm:mb-12">
           <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
             Zbieraj <span className="text-gradient-primary">się!</span>

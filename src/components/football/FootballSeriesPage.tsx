@@ -54,17 +54,17 @@ export function FootballSeriesPage() {
 
         const loadedOccurrences = await getFootballOccurrences(loadedSeries.id);
         if (!active) return;
-        const openOccurrences = loadedOccurrences.filter(
-          (occurrence) => occurrence.status === "open",
+        const listOccurrences = loadedOccurrences.filter(
+          (occurrence) => occurrence.status === "open" || occurrence.status === "cancelled",
         );
 
         const loadedSignups = await getFootballSignupsForOccurrences(
-          openOccurrences.map((occurrence) => occurrence.id),
+          listOccurrences.map((occurrence) => occurrence.id),
         );
         if (!active) return;
 
         setSeries(loadedSeries);
-        setOccurrences(openOccurrences);
+        setOccurrences(listOccurrences);
         setSignups(loadedSignups);
         setPhase("ready");
       } catch (error) {

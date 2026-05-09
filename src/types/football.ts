@@ -1,5 +1,7 @@
 export type FootballSignupStatus = "playing" | "not_playing" | "waitlist";
 
+export type FootballOccurrenceStatus = "open" | "cancelled";
+
 export interface FootballSeries {
   id: string;
   public_slug: string;

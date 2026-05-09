@@ -37,6 +37,7 @@ export function FootballOccurrencesList({
   return (
     <div className="space-y-3">
       {occurrences.map((occurrence) => {
+        const isCancelled = occurrence.status === "cancelled";
         const occurrenceSignups = signups.filter((s) => s.occurrence_id === occurrence.id);
         const playingCount = countPlaying(occurrenceSignups);
         const spotsLeft = Math.max(0, maxPlayers - playingCount);
@@ -47,9 +48,16 @@ export function FootballOccurrencesList({
         return (
           <div
             key={occurrence.id}
-            className="flex flex-col gap-3 rounded-lg border border-border/80 bg-secondary/30 p-4 sm:flex-row sm:items-center sm:justify-between"
+            className={`flex flex-col gap-3 rounded-lg border border-border/80 bg-secondary/30 p-4 sm:flex-row sm:items-center sm:justify-between ${
+              isCancelled ? "opacity-60" : ""
+            }`}
           >
             <div className="space-y-1">
+              {isCancelled && (
+                <p className="font-display text-xs font-bold uppercase tracking-widest text-destructive">
+                  ODWOŁANE
+                </p>
+              )}
               <p className="font-display text-sm uppercase tracking-wide text-foreground/90">
                 {DATE_FORMATTER.format(new Date(occurrence.starts_at))}
               </p>

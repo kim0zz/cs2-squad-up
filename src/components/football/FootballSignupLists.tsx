@@ -5,6 +5,7 @@ interface FootballSignupListsProps {
   signups: FootballSignup[];
   regularPlayers: FootballRegularPlayer[];
   busyNickname: string | null;
+  signupsDisabled?: boolean;
   onAdminDecision: (nickname: string, desiredStatus: "playing" | "not_playing") => Promise<void>;
 }
 
@@ -16,6 +17,7 @@ export function FootballSignupLists({
   signups,
   regularPlayers,
   busyNickname,
+  signupsDisabled = false,
   onAdminDecision,
 }: FootballSignupListsProps) {
   const playing = signups
@@ -94,7 +96,7 @@ export function FootballSignupLists({
                     type="button"
                     size="sm"
                     variant="outline"
-                    disabled={busyNickname === regular.nickname}
+                    disabled={signupsDisabled || busyNickname === regular.nickname}
                     onClick={() => void onAdminDecision(regular.nickname, "playing")}
                     className="font-display uppercase tracking-wide"
                   >
@@ -104,7 +106,7 @@ export function FootballSignupLists({
                     type="button"
                     size="sm"
                     variant="outline"
-                    disabled={busyNickname === regular.nickname}
+                    disabled={signupsDisabled || busyNickname === regular.nickname}
                     onClick={() => void onAdminDecision(regular.nickname, "not_playing")}
                     className="font-display uppercase tracking-wide"
                   >

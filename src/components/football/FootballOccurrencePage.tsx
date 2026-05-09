@@ -19,6 +19,7 @@ import {
   getFootballRegularPlayers,
   getFootballSeriesBySlug,
   getFootballSignups,
+  updateFootballOccurrenceStatus,
   upsertFootballSignup,
 } from "@/lib/footballRepository";
 import type {
@@ -50,6 +51,7 @@ export function FootballOccurrencePage() {
   const [nickname, setNickname] = useState(() => localStorage.getItem(FOOTBALL_NICKNAME_KEY) ?? "");
   const [savingStatus, setSavingStatus] = useState<FootballSignupStatus | null>(null);
   const [busyNickname, setBusyNickname] = useState<string | null>(null);
+  const [updatingOccurrenceStatus, setUpdatingOccurrenceStatus] = useState(false);
 
   const loadData = useCallback(async () => {
     if (!slug || !occurrenceId) {
@@ -97,6 +99,7 @@ export function FootballOccurrencePage() {
 
   const adminToken = searchParams.get("admin");
   const hasValidAdminToken = Boolean(series && adminToken && adminToken === series.admin_token);
+  const isCancelled = occurrence?.status === "cancelled";
   const seriesBackLink = useMemo(() => {
     if (!slug) return "/football";
     if (!adminToken) return `/football/${slug}`;
@@ -128,7 +131,7 @@ export function FootballOccurrencePage() {
   }, [series, occurrence]);
 
   const submitDecision = async (desiredStatus: "playing" | "not_playing") => {
-    if (!occurrence) return;
+    if (!occurrence || occurrence.status !== "open") return;
     const trimmedNick = nickname.trim();
     if (!trimmedNick) {
       toast.error("Podaj nick gracza");
@@ -158,7 +161,7 @@ export function FootballOccurrencePage() {
     regularNickname: string,
     desiredStatus: "playing" | "not_playing",
   ) => {
-    if (!occurrence) return;
+    if (!occurrence || occurrence.status !== "open") return;
     setBusyNickname(regularNickname);
     try {
       await upsertFootballSignup({
@@ -192,7 +195,8 @@ export function FootballOccurrencePage() {
   };
 
   const copyRegularReminder = async () => {
-    if (!series || !occurrence || undecidedRegularNicknames.length === 0) return;
+    if (!series || !occurrence || occurrence.status !== "open" || undecidedRegularNicknames.length === 0)
+      return;
     const text = buildFootballRegularReminderMessage({
       title: series.title,
       undecidedRegularNicknames,
@@ -200,6 +204,21 @@ export function FootballOccurrencePage() {
     });
     await navigator.clipboard.writeText(text);
     toast.success("Przypominajka skopiowana");
+  };
+
+  const handleOccurrenceStatusChange = async (nextStatus: "open" | "cancelled") => {
+    if (!occurrence || !hasValidAdminToken) return;
+    setUpdatingOccurrenceStatus(true);
+    try {
+      const updated = await updateFootballOccurrenceStatus(occurrence.id, nextStatus);
+      setOccurrence(updated);
+      toast.success(nextStatus === "cancelled" ? "Termin odwołany" : "Termin przywrócony");
+    } catch (error) {
+      console.error(error);
+      toast.error("Nie udało się zaktualizować terminu");
+    } finally {
+      setUpdatingOccurrenceStatus(false);
+    }
   };
 
   if (phase === "loading") {
@@ -256,7 +275,7 @@ export function FootballOccurrencePage() {
           >
             Kopiuj zaproszenie
           </Button>
-          {undecidedRegularNicknames.length > 0 && (
+          {!isCancelled && undecidedRegularNicknames.length > 0 && (
             <Button
               type="button"
               variant="outline"
@@ -269,6 +288,14 @@ export function FootballOccurrencePage() {
         </div>
 
         <Card className="space-y-3 border-border/80 bg-gradient-card p-6 sm:p-8">
+          {isCancelled && (
+            <div className="space-y-1">
+              <p className="font-display text-sm font-bold uppercase tracking-widest text-destructive">
+                ODWOŁANE
+              </p>
+              <p className="text-sm text-muted-foreground">Ten termin został odwołany.</p>
+            </div>
+          )}
           <h1 className="font-display text-2xl font-bold uppercase tracking-wide sm:text-3xl">
             {series.title}
           </h1>
@@ -286,58 +313,90 @@ export function FootballOccurrencePage() {
         </Card>
 
         <Card className="space-y-4 border-border/80 bg-gradient-card p-6">
-          <p className="text-sm">
-            {regularDeadlineOpen && deadlineDate
-              ? `Stali mają pierwszeństwo do ${DATE_TIME_FORMATTER.format(deadlineDate)}`
-              : "Zapisy otwarte dla wszystkich"}
-          </p>
+          {isCancelled && (
+            <p className="text-sm text-muted-foreground">Zapisy na ten termin są zamknięte.</p>
+          )}
+          {!isCancelled && (
+            <>
+              <p className="text-sm">
+                {regularDeadlineOpen && deadlineDate
+                  ? `Stali mają pierwszeństwo do ${DATE_TIME_FORMATTER.format(deadlineDate)}`
+                  : "Zapisy otwarte dla wszystkich"}
+              </p>
 
-          <div className="space-y-2">
-            <Label htmlFor="football-nickname">Nick gracza</Label>
-            <Input
-              id="football-nickname"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              maxLength={32}
-              placeholder="Twój nick"
-              className="bg-secondary/40 border-border/80"
-            />
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="football-nickname">Nick gracza</Label>
+                <Input
+                  id="football-nickname"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  maxLength={32}
+                  placeholder="Twój nick"
+                  className="bg-secondary/40 border-border/80"
+                />
+              </div>
 
-          <div className="flex flex-wrap gap-2">
-            <Button
-              type="button"
-              disabled={savingStatus !== null}
-              onClick={() => void submitDecision("playing")}
-              className="font-display uppercase tracking-wide"
-            >
-              Gram
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              disabled={savingStatus !== null}
-              onClick={() => void submitDecision("not_playing")}
-              className="font-display uppercase tracking-wide"
-            >
-              Nie gram
-            </Button>
-          </div>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  disabled={savingStatus !== null}
+                  onClick={() => void submitDecision("playing")}
+                  className="font-display uppercase tracking-wide"
+                >
+                  Gram
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={savingStatus !== null}
+                  onClick={() => void submitDecision("not_playing")}
+                  className="font-display uppercase tracking-wide"
+                >
+                  Nie gram
+                </Button>
+              </div>
+            </>
+          )}
         </Card>
+
+        {hasValidAdminToken && (
+          <Card className="space-y-3 border-border/80 bg-gradient-card p-6">
+            <h2 className="font-display text-sm font-bold uppercase tracking-wide text-muted-foreground">
+              Administracja
+            </h2>
+            {occurrence.status === "open" && (
+              <Button
+                type="button"
+                variant="destructive"
+                disabled={updatingOccurrenceStatus}
+                className="font-display uppercase tracking-wide"
+                onClick={() => void handleOccurrenceStatusChange("cancelled")}
+              >
+                Odwołaj termin
+              </Button>
+            )}
+            {occurrence.status === "cancelled" && (
+              <Button
+                type="button"
+                variant="outline"
+                disabled={updatingOccurrenceStatus}
+                className="font-display uppercase tracking-wide"
+                onClick={() => void handleOccurrenceStatusChange("open")}
+              >
+                Przywróć termin
+              </Button>
+            )}
+          </Card>
+        )}
 
         <Card className="border-border/80 bg-gradient-card p-6">
           <FootballSignupLists
             signups={signups}
             regularPlayers={regularPlayers}
             busyNickname={busyNickname}
+            signupsDisabled={isCancelled}
             onAdminDecision={handleAdminDecision}
           />
-          {hasValidAdminToken && (
-            <p className="mt-4 text-xs text-muted-foreground">
-              Tryb admin aktywny. Dodatkowe akcje administracyjne pojawią się tutaj w kolejnych
-              krokach.
-            </p>
-          )}
         </Card>
       </div>
     </main>
