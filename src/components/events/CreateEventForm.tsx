@@ -44,7 +44,7 @@ export function CreateEventForm() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !dateValue || !timeValue || !discordInfo.trim()) {
+    if (!title.trim() || !dateValue || !timeValue) {
       toast.error("Uzupełnij wymagane pola");
       return;
     }
@@ -65,7 +65,7 @@ export function CreateEventForm() {
         title: title.trim(),
         starts_at: startsAtDate.toISOString(),
         cs_mode: csMode,
-        discord_info: discordInfo.trim(),
+        discord_info: discordInfo.trim() || null,
         description: description.trim() || undefined,
       });
       toast.success("Zbiórka utworzona!");
@@ -151,13 +151,12 @@ export function CreateEventForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="discord">Discord *</Label>
+          <Label htmlFor="discord">Discord / kanał (opcjonalnie)</Label>
           <Input
             id="discord"
             placeholder="#cs2-squad lub link do invite"
             value={discordInfo}
             onChange={(e) => setDiscordInfo(e.target.value)}
-            required
           />
         </div>
 

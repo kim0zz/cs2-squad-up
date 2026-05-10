@@ -54,38 +54,38 @@ export function FootballOccurrencesList({
         const targetUrl = `/football/${seriesSlug}/${occurrence.public_slug}${suffix}`;
 
         return (
-          <div
+          <Link
             key={occurrence.id}
-            className={`flex flex-col gap-3 rounded-xl border border-border/90 bg-card/85 p-4 shadow-md shadow-black/25 ring-1 ring-white/5 sm:flex-row sm:items-center sm:justify-between ${
+            to={targetUrl}
+            className={`block group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
               isCancelled ? "opacity-60" : ""
             }`}
           >
-            <div className="space-y-1">
-              {isCancelled && (
-                <p className="font-display text-xs font-bold uppercase tracking-widest text-destructive">
-                  ODWOŁANE
+            <div className="flex flex-col gap-3 rounded-xl border border-border/80 bg-gradient-card p-4 sm:p-5 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/55 group-hover:shadow-glow sm:flex-row sm:items-center sm:justify-between cursor-pointer">
+              <div className="space-y-1 min-w-0 flex-1">
+                {isCancelled && (
+                  <p className="font-display text-xs font-bold uppercase tracking-widest text-destructive">
+                    ODWOŁANE
+                  </p>
+                )}
+                <p className="font-display text-sm uppercase tracking-wide text-foreground/90 group-hover:text-primary transition-colors">
+                  {DATE_FORMATTER.format(new Date(occurrence.starts_at))}
                 </p>
-              )}
-              <p className="font-display text-sm uppercase tracking-wide text-foreground/90">
-                {DATE_FORMATTER.format(new Date(occurrence.starts_at))}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {playingCount}/{maxPlayers}
-              </p>
-              <p className="text-sm font-medium">{statusText}</p>
-              {undecidedRegularsCount > 0 && (
-                <p className="text-xs text-muted-foreground/90">
-                  Stali bez decyzji: {undecidedRegularsCount}
+                <p className="text-sm text-muted-foreground">
+                  {playingCount}/{maxPlayers}
                 </p>
-              )}
+                <p className="text-sm font-medium">{statusText}</p>
+                {undecidedRegularsCount > 0 && (
+                  <p className="text-xs text-muted-foreground/90">
+                    Stali bez decyzji: {undecidedRegularsCount}
+                  </p>
+                )}
+              </div>
+              <span className="inline-flex shrink-0 items-center justify-center rounded-md border border-border/80 bg-secondary/45 px-4 py-2 text-sm font-display uppercase tracking-wider text-foreground transition-colors group-hover:border-primary/45 group-hover:bg-secondary/75">
+                Otwórz
+              </span>
             </div>
-            <Link
-              to={targetUrl}
-              className="inline-flex h-10 items-center justify-center rounded-md border border-border/80 bg-secondary/45 px-4 text-sm font-display uppercase tracking-wide text-foreground transition-colors hover:border-primary/50 hover:bg-secondary/75"
-            >
-              Otwórz
-            </Link>
-          </div>
+          </Link>
         );
       })}
     </div>

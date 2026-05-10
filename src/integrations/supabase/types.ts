@@ -20,7 +20,7 @@ export type Database = {
           created_at: string
           cs_mode: string
           description: string | null
-          discord_info: string
+          discord_info: string | null
           id: string
           max_players: number
           public_slug: string
@@ -35,7 +35,7 @@ export type Database = {
           created_at?: string
           cs_mode: string
           description?: string | null
-          discord_info: string
+          discord_info?: string | null
           id?: string
           max_players: number
           public_slug: string
@@ -50,7 +50,7 @@ export type Database = {
           created_at?: string
           cs_mode?: string
           description?: string | null
-          discord_info?: string
+          discord_info?: string | null
           id?: string
           max_players?: number
           public_slug?: string

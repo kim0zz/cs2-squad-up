@@ -24,7 +24,7 @@ export async function createEvent(input: CreateEventInput): Promise<EventRow> {
       starts_at: input.starts_at,
       max_players: maxPlayers,
       cs_mode: input.cs_mode,
-      discord_info: input.discord_info,
+      discord_info: input.discord_info?.trim() ? input.discord_info.trim() : null,
       description: input.description ?? null,
       activity_type: "cs2",
     })

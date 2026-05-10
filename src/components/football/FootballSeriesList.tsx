@@ -36,38 +36,41 @@ export function FootballSeriesList({ items }: FootballSeriesListProps) {
       {items.map(({ series, nextOccurrenceStartsAt }) => {
         const weekdayLabel = WEEKDAY_LABELS[series.weekday] ?? "Nieznany dzień";
         return (
-          <Card key={series.id} className="border-border/80 bg-gradient-card p-5 sm:p-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div className="space-y-2">
-                <h2 className="font-display text-xl font-bold uppercase tracking-wide">
-                  {series.title}
-                </h2>
-                <p className="text-sm">
-                  <span className="text-muted-foreground">Miejsce:</span> {series.location}
-                </p>
-                <p className="text-sm">
-                  <span className="text-muted-foreground">Dzień i godzina:</span> {weekdayLabel},{" "}
-                  {series.start_time}
-                </p>
-                <p className="text-sm">
-                  <span className="text-muted-foreground">Max graczy:</span> {series.max_players}
-                </p>
-                {nextOccurrenceStartsAt && (
+          <Link
+            key={series.id}
+            to={`/football/${series.public_slug}`}
+            className="block group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            <Card className="border-border/80 bg-gradient-card p-5 sm:p-6 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/55 group-hover:shadow-glow">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="space-y-2 min-w-0 flex-1">
+                  <h2 className="font-display text-xl font-bold uppercase tracking-wide group-hover:text-primary transition-colors">
+                    {series.title}
+                  </h2>
                   <p className="text-sm">
-                    <span className="text-muted-foreground">Najbliższy termin:</span>{" "}
-                    {DATE_FORMATTER.format(new Date(nextOccurrenceStartsAt))}
+                    <span className="text-muted-foreground">Miejsce:</span> {series.location}
                   </p>
-                )}
-              </div>
+                  <p className="text-sm">
+                    <span className="text-muted-foreground">Dzień i godzina:</span> {weekdayLabel},{" "}
+                    {series.start_time}
+                  </p>
+                  <p className="text-sm">
+                    <span className="text-muted-foreground">Max graczy:</span> {series.max_players}
+                  </p>
+                  {nextOccurrenceStartsAt && (
+                    <p className="text-sm">
+                      <span className="text-muted-foreground">Najbliższy termin:</span>{" "}
+                      {DATE_FORMATTER.format(new Date(nextOccurrenceStartsAt))}
+                    </p>
+                  )}
+                </div>
 
-              <Link
-                to={`/football/${series.public_slug}`}
-                className="inline-flex h-10 items-center justify-center rounded-md border border-border/80 bg-secondary/45 px-4 text-sm font-display uppercase tracking-wide text-foreground transition-colors hover:border-primary/50 hover:bg-secondary/75"
-              >
-                Otwórz
-              </Link>
-            </div>
-          </Card>
+                <span className="inline-flex shrink-0 items-center justify-center rounded-md border border-border/80 bg-secondary/45 px-4 py-2 text-sm font-display uppercase tracking-wider text-foreground transition-colors group-hover:border-primary/45 group-hover:bg-secondary/75">
+                  Otwórz
+                </span>
+              </div>
+            </Card>
+          </Link>
         );
       })}
     </div>

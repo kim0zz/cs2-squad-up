@@ -10,7 +10,7 @@ export interface EventRow {
   starts_at: string;
   max_players: number;
   cs_mode: CsMode;
-  discord_info: string;
+  discord_info: string | null;
   description: string | null;
   visibility: string;
   status: string;
@@ -31,6 +31,6 @@ export interface CreateEventInput {
   title: string;
   starts_at: string;
   cs_mode: CsMode;
-  discord_info: string;
+  discord_info?: string | null;
   description?: string;
 }

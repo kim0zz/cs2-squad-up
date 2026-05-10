@@ -233,8 +233,11 @@ export function EventPage() {
             <div className="flex items-center gap-2 text-xs text-muted-foreground uppercase font-display tracking-wider mb-1">
               <MessageSquare className="size-3.5" /> Discord
             </div>
-            <div className="font-medium text-sm truncate" title={event.discord_info}>
-              {event.discord_info}
+            <div
+              className="font-medium text-sm truncate"
+              title={event.discord_info?.trim() || undefined}
+            >
+              {event.discord_info?.trim() || "—"}
             </div>
           </div>
         </div>
