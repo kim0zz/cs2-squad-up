@@ -2,8 +2,23 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+function tryShowNativePicker(el: HTMLInputElement) {
+  const show = el.showPicker;
+  if (typeof show !== "function") return;
+  try {
+    show.call(el);
+  } catch {
+    /* unsupported, not user-activated, or picker already open */
+  }
+}
+
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
-  ({ className, type, ...props }, ref) => {
+  ({ className, type, onClick, onFocus, ...props }, ref) => {
+    const openPickerIfApplicable = (el: HTMLInputElement) => {
+      if (type !== "date" && type !== "time" && type !== "datetime-local") return;
+      tryShowNativePicker(el);
+    };
+
     return (
       <input
         type={type}
@@ -13,6 +28,14 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
         )}
         ref={ref}
         {...props}
+        onClick={(e) => {
+          openPickerIfApplicable(e.currentTarget);
+          onClick?.(e);
+        }}
+        onFocus={(e) => {
+          openPickerIfApplicable(e.currentTarget);
+          onFocus?.(e);
+        }}
       />
     );
   },

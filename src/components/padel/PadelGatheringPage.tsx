@@ -199,31 +199,35 @@ export function PadelGatheringPage() {
   return (
     <main className="min-h-screen">
       <div className="container max-w-2xl px-4 py-10 space-y-6">
-        <div className="flex flex-wrap items-center gap-2 justify-between">
+        <div className="flex flex-wrap gap-2">
           <Link
             to="/padel"
             className="inline-flex items-center rounded-md border border-border/80 bg-secondary/45 px-3 py-2 text-sm font-display uppercase tracking-wide text-foreground transition-colors hover:border-primary/50 hover:bg-secondary/75"
           >
             ← Zbiórki padla
           </Link>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={copyInvitation}
-            className="gap-2 font-display uppercase tracking-wide"
-          >
-            <Copy className="size-4" />
-            Kopiuj zaproszenie
-          </Button>
         </div>
 
         <Card className="bg-gradient-card border-border/80 p-6 sm:p-8">
-          <h1 className="font-display text-3xl font-bold uppercase tracking-wide break-words">
-            {gathering.title}
-          </h1>
-          {gathering.description && (
-            <p className="mt-4 text-muted-foreground whitespace-pre-wrap">{gathering.description}</p>
-          )}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0 flex-1 space-y-4">
+              <h1 className="font-display text-3xl font-bold uppercase tracking-wide break-words">
+                {gathering.title}
+              </h1>
+              {gathering.description && (
+                <p className="text-muted-foreground whitespace-pre-wrap">{gathering.description}</p>
+              )}
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => void copyInvitation()}
+              className="gap-2 shrink-0 font-display uppercase tracking-wide"
+            >
+              <Copy className="size-4" />
+              Kopiuj zaproszenie
+            </Button>
+          </div>
         </Card>
 
         <Card className="bg-gradient-card border-border/80 p-6">

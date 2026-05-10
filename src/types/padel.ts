@@ -52,4 +52,6 @@ export type PadelGatheringListItem = PadelGathering & {
   optionsCount: number;
   hasCompleteOption: boolean;
   maxFitsCount: number;
+  /** Earliest future option start, or earliest option if all past, or null if no options. */
+  nextStartsAt: string | null;
 };

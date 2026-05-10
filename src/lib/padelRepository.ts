@@ -12,6 +12,15 @@ import type {
 
 const MAX_OPTIONS_PER_GATHERING = 4;
 
+/** Earliest future `starts_at`, else earliest overall; null if no options. */
+function computeNextStartsAt(gOpts: PadelOption[]): string | null {
+  if (gOpts.length === 0) return null;
+  const now = new Date().toISOString();
+  const future = gOpts.filter((o) => o.starts_at >= now);
+  const pool = future.length > 0 ? future : gOpts;
+  return pool.reduce((m, x) => (x.starts_at < m ? x.starts_at : m), pool[0].starts_at);
+}
+
 function generateSlug(): string {
   return Math.random().toString(36).slice(2, 6) + Math.random().toString(36).slice(2, 6);
 }
@@ -174,6 +183,7 @@ export async function getOpenPadelGatheringsList(): Promise<PadelGatheringListIt
       optionsCount: gOpts.length,
       hasCompleteOption: hasComplete,
       maxFitsCount: maxFits,
+      nextStartsAt: computeNextStartsAt(gOpts),
     };
   });
 

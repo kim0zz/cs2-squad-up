@@ -9,6 +9,18 @@ import { toast } from "sonner";
 
 const sectionClass = "mt-0 space-y-4";
 
+const NEXT_TERMIN_FORMATTER = new Intl.DateTimeFormat("pl-PL", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+function formatNextTerminLabel(iso: string): string {
+  return NEXT_TERMIN_FORMATTER.format(new Date(iso));
+}
+
 function variantsLabel(n: number): string {
   if (n === 0) return "0 wariantów";
   if (n === 1) return "1 wariant";
@@ -99,6 +111,11 @@ export function UpcomingPadelGatheringsList() {
                     <h3 className="font-display text-lg font-bold leading-tight break-words group-hover:text-primary transition-colors">
                       {item.title}
                     </h3>
+                    {item.nextStartsAt != null && (
+                      <p className="text-sm text-muted-foreground">
+                        Najbliższy termin: {formatNextTerminLabel(item.nextStartsAt)}
+                      </p>
+                    )}
                     <p className="text-sm text-muted-foreground">{variantsLabel(item.optionsCount)}</p>
                     <div className="flex flex-wrap gap-x-3 gap-y-2 text-sm">
                       <span className="inline-flex items-center rounded-md border border-primary/45 bg-primary/10 px-2.5 py-1 font-semibold text-primary">

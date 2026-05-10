@@ -333,24 +333,6 @@ export function FootballOccurrencePage() {
           >
             ← Cykl
           </Link>
-          <Button
-            type="button"
-            variant="outline"
-            className="font-display uppercase tracking-wide"
-            onClick={() => void copyInvitation()}
-          >
-            Kopiuj zaproszenie
-          </Button>
-          {!isCancelled && undecidedRegularNicknames.length > 0 && (
-            <Button
-              type="button"
-              variant="outline"
-              className="font-display uppercase tracking-wide"
-              onClick={() => void copyRegularReminder()}
-            >
-              Kopiuj przypominajkę dla stałych
-            </Button>
-          )}
         </div>
 
         <Card className="space-y-3 border-border/80 bg-gradient-card p-6 sm:p-8">
@@ -399,6 +381,26 @@ export function FootballOccurrencePage() {
               "Zapisy otwarte dla wszystkich"
             )}
           </p>
+          <div className="flex flex-wrap gap-2 border-t border-border/60 pt-3">
+            <Button
+              type="button"
+              variant="outline"
+              className="font-display uppercase tracking-wide"
+              onClick={() => void copyInvitation()}
+            >
+              Kopiuj zaproszenie
+            </Button>
+            {!isCancelled && undecidedRegularNicknames.length > 0 && (
+              <Button
+                type="button"
+                variant="outline"
+                className="font-display uppercase tracking-wide"
+                onClick={() => void copyRegularReminder()}
+              >
+                Kopiuj przypominajkę dla stałych
+              </Button>
+            )}
+          </div>
         </Card>
 
         <FootballSignupLists

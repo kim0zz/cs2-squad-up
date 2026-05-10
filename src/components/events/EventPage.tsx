@@ -133,11 +133,6 @@ export function EventPage() {
       ? `${window.location.origin}/e/${event.public_slug}`
       : window.location.origin;
 
-  const copyLink = async () => {
-    await navigator.clipboard.writeText(getCanonicalEventUrl());
-    toast.success("Link skopiowany");
-  };
-
   const copyInvitation = async () => {
     if (!event) return;
     const message = buildInvitationMessage({
@@ -210,10 +205,6 @@ export function EventPage() {
             <Button variant="outline" onClick={copyInvitation} className="gap-2 font-display uppercase tracking-wide">
               <Copy className="size-4" />
               Kopiuj zaproszenie
-            </Button>
-            <Button variant="outline" onClick={copyLink} className="gap-2 font-display uppercase tracking-wide">
-              <Copy className="size-4" />
-              Skopiuj link
             </Button>
           </div>
         </div>

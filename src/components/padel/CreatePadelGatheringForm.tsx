@@ -17,7 +17,7 @@ import { createPadelGathering } from "@/lib/padelRepository";
 import { combineLocalDateAndTimeToIso, formatDateInput } from "@/lib/dateUtils";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 
-const DURATION_CHOICES = [60, 75, 90, 105, 120] as const;
+const DURATION_CHOICES = [60, 90, 120] as const;
 const DURATION_NONE = "__none__";
 
 type OptionDraft = {
@@ -157,20 +157,7 @@ export function CreatePadelGatheringForm() {
         </div>
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <h3 className="font-display text-lg font-bold uppercase tracking-wide">Terminy</h3>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="font-display uppercase tracking-wide gap-1"
-              onClick={addOption}
-              disabled={options.length >= 4}
-            >
-              <Plus className="size-4" />
-              Dodaj termin
-            </Button>
-          </div>
+          <h3 className="font-display text-lg font-bold uppercase tracking-wide">Terminy</h3>
 
           {options.map((opt, index) => (
             <div

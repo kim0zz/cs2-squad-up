@@ -75,6 +75,15 @@
     font-family: 'Rajdhani', sans-serif;
     letter-spacing: 0.01em;
   }
+
+  /* Native date/time icons — visible on dark backgrounds (WebKit/Blink) */
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator,
+  input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.88;
+    filter: invert(1) brightness(1.05);
+  }
 }
 
 @layer utilities {
