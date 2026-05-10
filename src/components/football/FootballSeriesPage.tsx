@@ -121,6 +121,40 @@ export function FootballSeriesPage() {
   }, [slug]);
 
   useEffect(() => {
+    if (phase !== "ready" || !series) return;
+    const seriesId = series.id;
+    let active = true;
+    const tick = async () => {
+      try {
+        const [loadedOccurrences, loadedRegulars] = await Promise.all([
+          getFootballOccurrences(seriesId),
+          getFootballRegularPlayers(seriesId),
+        ]);
+        if (!active) return;
+        const listOccurrences = loadedOccurrences.filter(
+          (occurrence) => occurrence.status === "open" || occurrence.status === "cancelled",
+        );
+        const loadedSignups = await getFootballSignupsForOccurrences(
+          listOccurrences.map((occurrence) => occurrence.id),
+        );
+        if (!active) return;
+        setOccurrences(listOccurrences);
+        setSignups(loadedSignups);
+        setRegularPlayers(loadedRegulars);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    const id = window.setInterval(() => {
+      void tick();
+    }, 30_000);
+    return () => {
+      active = false;
+      window.clearInterval(id);
+    };
+  }, [phase, series?.id]);
+
+  useEffect(() => {
     if (phase === "ready" && series) {
       document.title = `${series.title} — Piłka — Zbieraj się!`;
       return;

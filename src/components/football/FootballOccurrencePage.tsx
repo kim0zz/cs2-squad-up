@@ -101,6 +101,32 @@ export function FootballOccurrencePage() {
   }, [loadData]);
 
   useEffect(() => {
+    if (phase !== "ready" || !occurrence) return;
+    const occId = occurrence.id;
+    let active = true;
+    const tick = async () => {
+      try {
+        const [nextSignups, nextComments] = await Promise.all([
+          getFootballSignups(occId),
+          getFootballOccurrenceComments(occId),
+        ]);
+        if (!active) return;
+        setSignups(nextSignups);
+        setOccurrenceComments(nextComments);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    const id = window.setInterval(() => {
+      void tick();
+    }, 5000);
+    return () => {
+      active = false;
+      window.clearInterval(id);
+    };
+  }, [phase, occurrence?.id]);
+
+  useEffect(() => {
     if (phase === "ready" && series && occurrence) {
       document.title = `${series.title} — ${DATE_TIME_FORMATTER.format(new Date(occurrence.starts_at))} — Piłka`;
       return;

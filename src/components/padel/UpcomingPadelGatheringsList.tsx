@@ -25,20 +25,27 @@ export function UpcomingPadelGatheringsList() {
 
   useEffect(() => {
     let active = true;
-    (async () => {
+    const load = async (isInitial: boolean) => {
       try {
         const data = await getOpenPadelGatheringsList();
-        if (active) setItems(data);
+        if (!active) return;
+        setItems(data);
       } catch (err) {
         console.error(err);
-        if (active) {
+        if (!active) return;
+        if (isInitial) {
           setItems([]);
           toast.error("Nie udało się wczytać zbiórek padla");
         }
       }
-    })();
+    };
+    void load(true);
+    const id = window.setInterval(() => {
+      void load(false);
+    }, 30_000);
     return () => {
       active = false;
+      window.clearInterval(id);
     };
   }, []);
 

@@ -31,18 +31,27 @@ export function UpcomingEventsList({ onExpandCreate }: UpcomingEventsListProps) 
 
   useEffect(() => {
     let active = true;
-    (async () => {
+    const load = async (isInitial: boolean) => {
       try {
         const data = await getUpcomingEvents();
-        if (active) setItems(data);
+        if (!active) return;
+        setItems(data);
       } catch (err) {
         console.error(err);
-        if (active) setItems([]);
-        toast.error("Nie udało się wczytać zbiórek");
+        if (!active) return;
+        if (isInitial) {
+          setItems([]);
+          toast.error("Nie udało się wczytać zbiórek");
+        }
       }
-    })();
+    };
+    void load(true);
+    const id = window.setInterval(() => {
+      void load(false);
+    }, 30_000);
     return () => {
       active = false;
+      window.clearInterval(id);
     };
   }, []);
 

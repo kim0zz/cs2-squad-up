@@ -70,6 +70,28 @@ export function EventPage() {
     return () => { active = false; };
   }, [slug]);
 
+  useEffect(() => {
+    if (!slug || !event || event.public_slug !== slug) return;
+    const eventId = event.id;
+    let active = true;
+    const tick = async () => {
+      try {
+        const ps = await getParticipants(eventId);
+        if (!active) return;
+        setParticipants(ps);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    const id = window.setInterval(() => {
+      void tick();
+    }, 5000);
+    return () => {
+      active = false;
+      window.clearInterval(id);
+    };
+  }, [slug, event?.id, event?.public_slug]);
+
   // SEO
   useEffect(() => {
     if (event) {

@@ -95,6 +95,33 @@ export function PadelGatheringPage() {
   }, [slug]);
 
   useEffect(() => {
+    if (phase !== "ready" || !gathering) return;
+    const opts = baseOptions;
+    let active = true;
+    const tick = async () => {
+      try {
+        if (opts.length === 0) {
+          if (!active) return;
+          setOptionsWithVotes([]);
+          return;
+        }
+        const votes = await getPadelVotes(opts.map((o) => o.id));
+        if (!active) return;
+        setOptionsWithVotes(mergeOptionsWithVotes(opts, votes));
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    const id = window.setInterval(() => {
+      void tick();
+    }, 5000);
+    return () => {
+      active = false;
+      window.clearInterval(id);
+    };
+  }, [phase, gathering?.id, baseOptions]);
+
+  useEffect(() => {
     if (gathering && phase === "ready") {
       document.title = `${gathering.title} — Padel — Zbieraj się!`;
     }
