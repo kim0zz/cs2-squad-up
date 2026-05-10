@@ -30,6 +30,7 @@ import type {
 } from "@/types/padel";
 import { toast } from "sonner";
 import { Copy } from "lucide-react";
+import { cn, mobileCardTopAccent, mobileOutlineCtaRing } from "@/lib/utils";
 
 function mergeOptionsWithVotes(options: PadelOption[], votes: PadelVote[]): PadelOptionWithVotes[] {
   const withVotes: PadelOptionWithVotes[] = options.map((o) => ({
@@ -208,7 +209,12 @@ export function PadelGatheringPage() {
           </Link>
         </div>
 
-        <Card className="bg-gradient-card border-border/80 p-6 sm:p-8">
+        <Card
+          className={cn(
+            "bg-gradient-card border-border/80 p-6 sm:p-8",
+            mobileCardTopAccent,
+          )}
+        >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0 flex-1 space-y-4">
               <h1 className="font-display text-3xl font-bold uppercase tracking-wide break-words">
@@ -222,7 +228,10 @@ export function PadelGatheringPage() {
               type="button"
               variant="outline"
               onClick={() => void copyInvitation()}
-              className="gap-2 shrink-0 font-display uppercase tracking-wide"
+              className={cn(
+                "gap-2 shrink-0 font-display uppercase tracking-wide",
+                mobileOutlineCtaRing,
+              )}
             >
               <Copy className="size-4" />
               Kopiuj zaproszenie
@@ -230,7 +239,7 @@ export function PadelGatheringPage() {
           </div>
         </Card>
 
-        <Card className="bg-gradient-card border-border/80 p-6">
+        <Card className={cn("bg-gradient-card border-border/80 p-6", mobileCardTopAccent)}>
           <Label htmlFor="padel-nick" className="font-display uppercase tracking-wide text-xs text-muted-foreground">
             Nick gracza
           </Label>

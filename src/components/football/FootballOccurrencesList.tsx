@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type { FootballOccurrence, FootballRegularPlayer, FootballSignup } from "@/types/football";
+import { cn, mobileCardTopAccent } from "@/lib/utils";
 import { countPlaying } from "@/lib/footballRules";
 
 interface FootballOccurrencesListProps {
@@ -61,7 +62,12 @@ export function FootballOccurrencesList({
               isCancelled ? "opacity-60" : ""
             }`}
           >
-            <div className="flex flex-col gap-3 rounded-xl border border-border/80 bg-gradient-card p-4 sm:p-5 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/55 group-hover:shadow-glow sm:flex-row sm:items-center sm:justify-between cursor-pointer">
+            <div
+              className={cn(
+                "flex flex-col gap-3 rounded-xl border border-border/80 bg-gradient-card p-4 sm:p-5 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/55 group-hover:shadow-glow sm:flex-row sm:items-center sm:justify-between cursor-pointer",
+                mobileCardTopAccent,
+              )}
+            >
               <div className="space-y-1 min-w-0 flex-1">
                 {isCancelled && (
                   <p className="font-display text-xs font-bold uppercase tracking-widest text-destructive">
@@ -71,10 +77,18 @@ export function FootballOccurrencesList({
                 <p className="font-display text-sm uppercase tracking-wide text-foreground/90 group-hover:text-primary transition-colors">
                   {DATE_FORMATTER.format(new Date(occurrence.starts_at))}
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm tabular-nums font-semibold text-primary/95 sm:font-normal sm:text-muted-foreground">
                   {playingCount}/{maxPlayers}
                 </p>
-                <p className="text-sm font-medium">{statusText}</p>
+                <p
+                  className={
+                    spotsLeft > 0
+                      ? "text-sm font-medium text-primary/95 sm:text-foreground"
+                      : "text-sm font-medium"
+                  }
+                >
+                  {statusText}
+                </p>
                 {undecidedRegularsCount > 0 && (
                   <p className="text-xs text-muted-foreground/90">
                     Stali bez decyzji: {undecidedRegularsCount}

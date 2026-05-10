@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getOpenPadelGatheringsList } from "@/lib/padelRepository";
+import { cn, mobileCardTopAccent, mobilePrimaryCtaRing } from "@/lib/utils";
 import type { PadelGatheringListItem } from "@/types/padel";
 import { toast } from "sonner";
 
@@ -66,7 +67,13 @@ export function UpcomingPadelGatheringsList() {
       <h2 className="font-display text-xl sm:text-2xl font-bold uppercase tracking-wide">
         Zbiórki padla
       </h2>
-      <Button asChild className="font-display uppercase tracking-wider w-full sm:w-auto shrink-0">
+      <Button
+        asChild
+        className={cn(
+          "font-display uppercase tracking-wider w-full sm:w-auto shrink-0",
+          mobilePrimaryCtaRing,
+        )}
+      >
         <Link to="/padel/new">Utwórz zbiórkę</Link>
       </Button>
     </div>
@@ -90,7 +97,14 @@ export function UpcomingPadelGatheringsList() {
           <h3 className="font-display text-lg sm:text-xl font-bold leading-snug">
             Nie ma jeszcze żadnych zbiórek padla
           </h3>
-          <Button asChild size="lg" className="w-full max-w-xs mx-auto font-display uppercase tracking-wider">
+          <Button
+            asChild
+            size="lg"
+            className={cn(
+              "w-full max-w-xs mx-auto font-display uppercase tracking-wider",
+              mobilePrimaryCtaRing,
+            )}
+          >
             <Link to="/padel/new">Utwórz pierwszą zbiórkę</Link>
           </Button>
         </Card>
@@ -105,9 +119,17 @@ export function UpcomingPadelGatheringsList() {
         {items.map((item) => (
           <li key={item.id}>
             <Link to={`/padel/${item.public_slug}`} className="block group">
-              <Card className="bg-gradient-card border-border/80 p-4 sm:p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/55 hover:shadow-glow">
+              <Card
+                className={cn(
+                  "bg-gradient-card border-border/80 p-4 sm:p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/55 hover:shadow-glow",
+                  mobileCardTopAccent,
+                )}
+              >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 flex-1 space-y-2">
+                    <span className="inline-flex w-fit rounded-md border border-primary/35 bg-primary/[0.07] px-2 py-0.5 text-[10px] font-display font-semibold uppercase tracking-wider text-primary/90 sm:border-border/60 sm:bg-transparent sm:text-muted-foreground">
+                      Padel
+                    </span>
                     <h3 className="font-display text-lg font-bold leading-tight break-words group-hover:text-primary transition-colors">
                       {item.title}
                     </h3>
@@ -118,7 +140,7 @@ export function UpcomingPadelGatheringsList() {
                     )}
                     <p className="text-sm text-muted-foreground">{variantsLabel(item.optionsCount)}</p>
                     <div className="flex flex-wrap gap-x-3 gap-y-2 text-sm">
-                      <span className="inline-flex items-center rounded-md border border-primary/45 bg-primary/10 px-2.5 py-1 font-semibold text-primary">
+                      <span className="inline-flex items-center rounded-md border border-primary/55 bg-primary/[0.12] px-2.5 py-1 font-semibold text-primary sm:border-primary/45 sm:bg-primary/10">
                         {summaryText(item)}
                       </span>
                     </div>

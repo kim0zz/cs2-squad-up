@@ -36,6 +36,7 @@ import type {
 import { useAuth } from "@/hooks/useAuth";
 import { FootballDiscussion } from "./FootballDiscussion";
 import { FootballSignupLists } from "./FootballSignupLists";
+import { cn, mobileCardTopAccent, mobileOutlineCtaRing, mobilePrimaryCtaRing } from "@/lib/utils";
 
 const DATE_TIME_FORMATTER = new Intl.DateTimeFormat("pl-PL", {
   weekday: "long",
@@ -335,7 +336,12 @@ export function FootballOccurrencePage() {
           </Link>
         </div>
 
-        <Card className="space-y-3 border-border/80 bg-gradient-card p-6 sm:p-8">
+        <Card
+          className={cn(
+            "space-y-3 border-border/80 bg-gradient-card p-6 sm:p-8",
+            mobileCardTopAccent,
+          )}
+        >
           {isCancelled && (
             <div className="space-y-1">
               <p className="font-display text-sm font-bold uppercase tracking-widest text-destructive">
@@ -361,7 +367,10 @@ export function FootballOccurrencePage() {
           )}
           <p className="text-sm flex flex-wrap items-center gap-x-2 gap-y-1">
             <span>
-              <span className="text-muted-foreground">Skład:</span> {playingCount}/{series.max_players}
+              <span className="text-muted-foreground">Skład:</span>{" "}
+              <span className="tabular-nums font-semibold text-primary/95 sm:font-normal sm:text-foreground">
+                {playingCount}/{series.max_players}
+              </span>
             </span>
             {overCapacity && (
               <span className="rounded border border-amber-500/50 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-400">
@@ -369,7 +378,17 @@ export function FootballOccurrencePage() {
               </span>
             )}
           </p>
-          {capacityText != null && <p className="text-sm font-medium">{capacityText}</p>}
+          {capacityText != null && (
+            <p
+              className={
+                spotsLeft > 0
+                  ? "text-sm font-medium text-primary/95 sm:text-foreground"
+                  : "text-sm font-medium"
+              }
+            >
+              {capacityText}
+            </p>
+          )}
           <p className="text-sm text-muted-foreground border-t border-border/60 pt-3">
             {isCancelled ? (
               "Zapisy na ten termin są zamknięte."
@@ -385,7 +404,10 @@ export function FootballOccurrencePage() {
             <Button
               type="button"
               variant="outline"
-              className="font-display uppercase tracking-wide"
+              className={cn(
+                "font-display uppercase tracking-wide",
+                mobileOutlineCtaRing,
+              )}
               onClick={() => void copyInvitation()}
             >
               Kopiuj zaproszenie
@@ -394,7 +416,10 @@ export function FootballOccurrencePage() {
               <Button
                 type="button"
                 variant="outline"
-                className="font-display uppercase tracking-wide"
+                className={cn(
+                  "font-display uppercase tracking-wide",
+                  mobileOutlineCtaRing,
+                )}
                 onClick={() => void copyRegularReminder()}
               >
                 Kopiuj przypominajkę dla stałych
@@ -414,7 +439,7 @@ export function FootballOccurrencePage() {
         />
 
         {!isCancelled && (
-          <Card className="space-y-4 border-border/80 bg-gradient-card p-6">
+          <Card className={cn("space-y-4 border-border/80 bg-gradient-card p-6", mobileCardTopAccent)}>
             {!manualSignupOpen ? (
               <Button
                 type="button"
@@ -443,7 +468,7 @@ export function FootballOccurrencePage() {
                     type="button"
                     disabled={savingStatus !== null}
                     onClick={() => void submitDecision("playing")}
-                    className="font-display uppercase tracking-wide"
+                    className={cn("font-display uppercase tracking-wide", mobilePrimaryCtaRing)}
                   >
                     Gram
                   </Button>

@@ -5,6 +5,7 @@ import { getFootballOccurrences, getFootballSeriesList } from "@/lib/footballRep
 import type { FootballSeries } from "@/types/football";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { cn, mobilePrimaryCtaRing } from "@/lib/utils";
 
 const FootballPage = () => {
   const [phase, setPhase] = useState<"loading" | "ready">("loading");
@@ -88,7 +89,10 @@ const FootballPage = () => {
               </Button>
               <Button
                 asChild
-                className="h-11 min-w-0 flex-1 font-display text-base uppercase tracking-wider sm:h-12 sm:flex-initial"
+                className={cn(
+                  "h-11 min-w-0 flex-1 font-display text-base uppercase tracking-wider sm:h-12 sm:flex-initial",
+                  mobilePrimaryCtaRing,
+                )}
               >
                 <Link to="/football/new">Utwórz zbiórkę</Link>
               </Button>

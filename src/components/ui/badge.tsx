@@ -12,9 +12,12 @@ const badgeVariants = cva(
         secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
-        modeFaceit: "border-lime-400/65 bg-lime-500/18 text-lime-200 shadow-[0_0_14px_hsl(75_100%_55%_/_0.2)]",
-        modePremier: "border-slate-300/55 bg-slate-200/12 text-slate-100",
-        modeMix10: "border-lime-300/75 bg-lime-400/25 text-lime-100 shadow-[0_0_20px_hsl(75_100%_55%_/_0.24)]",
+        modeFaceit:
+          "border-lime-400/55 bg-lime-500/14 text-lime-100 ring-1 ring-lime-400/30 sm:ring-0 sm:border-lime-400/65 sm:bg-lime-500/18 sm:text-lime-200 sm:shadow-[0_0_14px_hsl(75_100%_55%_/_0.2)]",
+        modePremier:
+          "border-slate-300/50 bg-slate-200/10 text-slate-100 ring-1 ring-slate-200/25 sm:ring-0 sm:border-slate-300/55 sm:bg-slate-200/12 sm:text-slate-100",
+        modeMix10:
+          "border-lime-300/65 bg-lime-400/18 text-lime-50 ring-1 ring-lime-300/35 sm:ring-0 sm:border-lime-300/75 sm:bg-lime-400/25 sm:text-lime-100 sm:shadow-[0_0_20px_hsl(75_100%_55%_/_0.24)]",
       },
     },
     defaultVariants: {

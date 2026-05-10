@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Crosshair } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { cn, mobilePrimaryCtaRing } from "@/lib/utils";
 
 const Cs2Page = () => {
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
@@ -78,11 +79,12 @@ const Cs2Page = () => {
             type="button"
             size="lg"
             variant={isCreateFormOpen ? "outline" : "default"}
-            className={
+            className={cn(
               isCreateFormOpen
                 ? "font-display uppercase tracking-wider"
-                : "w-full max-w-sm font-display uppercase tracking-wider sm:w-auto"
-            }
+                : "w-full max-w-sm font-display uppercase tracking-wider sm:w-auto",
+              !isCreateFormOpen && mobilePrimaryCtaRing,
+            )}
             onClick={() => setIsCreateFormOpen((open) => !open)}
           >
             {isCreateFormOpen ? "Ukryj formularz" : "+ Utwórz zbiórkę"}

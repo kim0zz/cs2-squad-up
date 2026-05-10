@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
+import { cn, mobileCardTopAccent } from "@/lib/utils";
 import type { FootballSeries } from "@/types/football";
 
 interface FootballSeriesListItem {
@@ -41,9 +42,17 @@ export function FootballSeriesList({ items }: FootballSeriesListProps) {
             to={`/football/${series.public_slug}`}
             className="block group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
-            <Card className="border-border/80 bg-gradient-card p-5 sm:p-6 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/55 group-hover:shadow-glow">
+            <Card
+              className={cn(
+                "border-border/80 bg-gradient-card p-5 sm:p-6 transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-primary/55 group-hover:shadow-glow",
+                mobileCardTopAccent,
+              )}
+            >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="space-y-2 min-w-0 flex-1">
+                  <span className="inline-flex w-fit rounded-md border border-primary/35 bg-primary/[0.07] px-2 py-0.5 text-[10px] font-display font-semibold uppercase tracking-wider text-primary/90 sm:border-border/60 sm:bg-transparent sm:text-muted-foreground">
+                    Piłka
+                  </span>
                   <h2 className="font-display text-xl font-bold uppercase tracking-wide group-hover:text-primary transition-colors">
                     {series.title}
                   </h2>

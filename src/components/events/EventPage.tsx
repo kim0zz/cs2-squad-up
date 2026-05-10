@@ -24,6 +24,7 @@ import { countPlaying, NICKNAME_KEY, spotsLeft } from "@/lib/eventRules";
 import type { EventRow, ParticipantRow, ResponseStatus } from "@/types/event";
 import { ParticipantLists } from "./ParticipantLists";
 import { Calendar, Copy, Gamepad2, MessageSquare, Users } from "lucide-react";
+import { cn, mobileCardTopAccent, mobileOutlineCtaRing, mobilePrimaryCtaRing } from "@/lib/utils";
 
 const MODE_LABELS: Record<EventRow["cs_mode"], string> = {
   faceit: "Faceit",
@@ -186,7 +187,12 @@ export function EventPage() {
       </Link>
 
       {/* Header */}
-      <Card className="bg-gradient-card border-border/80 p-6 sm:p-8">
+      <Card
+        className={cn(
+          "bg-gradient-card border-border/80 p-6 sm:p-8",
+          mobileCardTopAccent,
+        )}
+      >
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div className="flex-1 min-w-0">
             <Badge variant={MODE_BADGE_VARIANT[event.cs_mode]} className="font-display uppercase tracking-wider mb-3">
@@ -202,7 +208,14 @@ export function EventPage() {
             <div className="mt-4 h-px w-28 bg-gradient-to-r from-primary/65 to-transparent" />
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <Button variant="outline" onClick={copyInvitation} className="gap-2 font-display uppercase tracking-wide">
+            <Button
+              variant="outline"
+              onClick={copyInvitation}
+              className={cn(
+                "gap-2 font-display uppercase tracking-wide",
+                mobileOutlineCtaRing,
+              )}
+            >
               <Copy className="size-4" />
               Kopiuj zaproszenie
             </Button>
@@ -210,18 +223,24 @@ export function EventPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
-          <div className="rounded-lg border border-border/75 bg-secondary/55 p-4">
+          <div className="rounded-lg border border-border/75 bg-secondary/55 p-4 max-sm:ring-1 max-sm:ring-primary/12 sm:ring-0">
             <div className="flex items-center gap-2 text-xs text-muted-foreground uppercase font-display tracking-wider mb-1">
               <Users className="size-3.5" /> Skład
             </div>
             <div className="font-display text-2xl font-bold">
-              <span className={playingCount >= event.max_players ? "text-success" : "text-foreground"}>
+              <span
+                className={
+                  playingCount >= event.max_players
+                    ? "text-success"
+                    : "text-foreground max-sm:text-primary max-sm:font-extrabold"
+                }
+              >
                 {playingCount}
               </span>
               <span className="text-muted-foreground">/{event.max_players}</span>
             </div>
           </div>
-          <div className="rounded-lg border border-border/75 bg-secondary/55 p-4">
+          <div className="rounded-lg border border-border/75 bg-secondary/55 p-4 max-sm:ring-1 max-sm:ring-primary/12 sm:ring-0">
             <div className="flex items-center gap-2 text-xs text-muted-foreground uppercase font-display tracking-wider mb-1">
               <Gamepad2 className="size-3.5" /> Brakuje
             </div>
@@ -229,7 +248,7 @@ export function EventPage() {
               {left > 0 ? `${left} ${left === 1 ? "gracza" : "graczy"}` : "Komplet ✓"}
             </div>
           </div>
-          <div className="rounded-lg border border-border/75 bg-secondary/55 p-4 sm:col-span-1 col-span-1">
+          <div className="rounded-lg border border-border/75 bg-secondary/55 p-4 sm:col-span-1 col-span-1 max-sm:ring-1 max-sm:ring-primary/12 sm:ring-0">
             <div className="flex items-center gap-2 text-xs text-muted-foreground uppercase font-display tracking-wider mb-1">
               <MessageSquare className="size-3.5" /> Discord
             </div>
@@ -250,7 +269,7 @@ export function EventPage() {
       </Card>
 
       {/* Join */}
-      <Card className="bg-gradient-card border-border/80 p-6">
+      <Card className={cn("bg-gradient-card border-border/80 p-6", mobileCardTopAccent)}>
         <h2 className="font-display text-xl font-bold uppercase tracking-wide mb-4">
           Dodaj / zaktualizuj gracza
         </h2>
@@ -265,7 +284,7 @@ export function EventPage() {
             <Button
               onClick={() => handleStatus("playing")}
               disabled={!!submitting}
-              className="font-display uppercase tracking-wider"
+              className={cn("font-display uppercase tracking-wider", mobilePrimaryCtaRing)}
             >
               Gram
             </Button>

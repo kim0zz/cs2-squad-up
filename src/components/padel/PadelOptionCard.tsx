@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { countFits, isPadelOptionComplete } from "@/lib/padelRules";
 import type { PadelOptionWithVotes, PadelVoteStatus } from "@/types/padel";
 import { Calendar, Clock, MapPin } from "lucide-react";
+import { cn, mobileCardTopAccent, mobilePrimaryCtaRing } from "@/lib/utils";
 
 function formatOptionWhen(iso: string): string {
   const d = new Date(iso);
@@ -38,7 +39,12 @@ export function PadelOptionCard({ option, onVote, voteLocked }: PadelOptionCardP
   const doesntNames = sortedNicknames(votes, "doesnt_fit");
 
   return (
-    <Card className="bg-gradient-card border-border/80 p-5 sm:p-6 space-y-4">
+    <Card
+      className={cn(
+        "bg-gradient-card border-border/80 p-5 sm:p-6 space-y-4",
+        mobileCardTopAccent,
+      )}
+    >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-2 min-w-0 flex-1">
           <div className="flex items-center gap-2 text-foreground">
@@ -62,9 +68,11 @@ export function PadelOptionCard({ option, onVote, voteLocked }: PadelOptionCardP
           )}
         </div>
         <div className="flex flex-col items-end gap-2 shrink-0">
-          <span className="font-display text-lg font-bold tabular-nums">
+          <span className="font-display text-lg font-bold tabular-nums max-sm:text-primary">
             {fitsCount}
-            <span className="text-muted-foreground font-normal">/4</span>
+            <span className="text-muted-foreground font-normal max-sm:text-primary/70">
+              /4
+            </span>
           </span>
           {complete && (
             <Badge className="font-display uppercase tracking-wider border-success/60 bg-success/15 text-success">
@@ -77,7 +85,10 @@ export function PadelOptionCard({ option, onVote, voteLocked }: PadelOptionCardP
       <div className="flex flex-col sm:flex-row gap-2">
         <Button
           type="button"
-          className="font-display uppercase tracking-wider flex-1"
+          className={cn(
+            "font-display uppercase tracking-wider flex-1",
+            mobilePrimaryCtaRing,
+          )}
           disabled={voteLocked}
           onClick={() => onVote("fits")}
         >
