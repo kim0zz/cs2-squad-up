@@ -2,6 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { MAX_PLAYERS_BY_MODE, resolveStatus } from "@/lib/eventRules";
 import type {
   CreateEventInput,
+  EventComment,
   EventRow,
   ParticipantRow,
   ResponseStatus,
@@ -88,6 +89,43 @@ export async function getParticipants(eventId: string): Promise<ParticipantRow[]
     .order("created_at", { ascending: true });
   if (error) throw error;
   return (data ?? []) as ParticipantRow[];
+}
+
+export async function getEventComments(eventId: string): Promise<EventComment[]> {
+  const { data, error } = await supabase
+    .from("cs2_event_comments")
+    .select("*")
+    .eq("event_id", eventId)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as EventComment[];
+}
+
+export async function addEventComment(
+  eventId: string,
+  nickname: string,
+  body: string,
+): Promise<EventComment> {
+  const trimmedNick = nickname.trim();
+  const trimmedBody = body.trim();
+  if (!trimmedNick || trimmedNick.length > 80) {
+    throw new Error("Nickname must be 1–80 characters");
+  }
+  if (!trimmedBody || trimmedBody.length > 1000) {
+    throw new Error("Message must be 1–1000 characters");
+  }
+
+  const { data, error } = await supabase
+    .from("cs2_event_comments")
+    .insert({
+      event_id: eventId,
+      nickname: trimmedNick,
+      body: trimmedBody,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return data as EventComment;
 }
 
 export async function upsertParticipant(

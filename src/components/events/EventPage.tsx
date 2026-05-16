@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,11 +17,13 @@ import { buildInvitationMessage } from "@/lib/invitationMessage";
 import { toast } from "sonner";
 import {
   getEventBySlug,
+  getEventComments,
   getParticipants,
   upsertParticipant,
 } from "@/lib/eventRepository";
 import { countPlaying, NICKNAME_KEY, spotsLeft } from "@/lib/eventRules";
-import type { EventRow, ParticipantRow, ResponseStatus } from "@/types/event";
+import type { EventComment, EventRow, ParticipantRow, ResponseStatus } from "@/types/event";
+import { EventDiscussion } from "./EventDiscussion";
 import { ParticipantLists } from "./ParticipantLists";
 import { Calendar, Copy, Gamepad2, MessageSquare, Users } from "lucide-react";
 import { cn, mobileCardTopAccent, mobileOutlineCtaRing, mobilePrimaryCtaRing } from "@/lib/utils";
@@ -43,6 +45,7 @@ export function EventPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [event, setEvent] = useState<EventRow | null>(null);
   const [participants, setParticipants] = useState<ParticipantRow[]>([]);
+  const [eventComments, setEventComments] = useState<EventComment[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [nickname, setNickname] = useState(() => localStorage.getItem(NICKNAME_KEY) ?? "");
@@ -61,9 +64,13 @@ export function EventPage() {
           return;
         }
         setEvent(ev);
-        const ps = await getParticipants(ev.id);
+        const [ps, comments] = await Promise.all([
+          getParticipants(ev.id),
+          getEventComments(ev.id),
+        ]);
         if (!active) return;
         setParticipants(ps);
+        setEventComments(comments);
       } finally {
         if (active) setLoading(false);
       }
@@ -77,9 +84,13 @@ export function EventPage() {
     let active = true;
     const tick = async () => {
       try {
-        const ps = await getParticipants(eventId);
+        const [ps, comments] = await Promise.all([
+          getParticipants(eventId),
+          getEventComments(eventId),
+        ]);
         if (!active) return;
         setParticipants(ps);
+        setEventComments(comments);
       } catch (err) {
         console.error(err);
       }
@@ -102,6 +113,12 @@ export function EventPage() {
 
   const playingCount = useMemo(() => countPlaying(participants), [participants]);
   const left = event ? spotsLeft(participants, event.max_players) : 0;
+
+  const refreshEventComments = useCallback(async () => {
+    if (!event) return;
+    const next = await getEventComments(event.id);
+    setEventComments(next);
+  }, [event]);
 
   const handleStatus = async (chosen: ResponseStatus) => {
     if (!event) return;
@@ -193,8 +210,8 @@ export function EventPage() {
           mobileCardTopAccent,
         )}
       >
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div className="flex-1 min-w-0">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+          <div className="min-w-0 flex-1">
             <Badge variant={MODE_BADGE_VARIANT[event.cs_mode]} className="font-display uppercase tracking-wider mb-3">
               {MODE_LABELS[event.cs_mode]}
             </Badge>
@@ -202,17 +219,17 @@ export function EventPage() {
               {event.title}
             </h1>
             <div className="flex items-center gap-2 text-muted-foreground">
-              <Calendar className="size-4" />
+              <Calendar className="size-4 shrink-0" />
               <span className="capitalize">{dateStr}</span>
             </div>
-            <div className="mt-4 h-px w-28 bg-gradient-to-r from-primary/65 to-transparent" />
+            <div className="mt-4 hidden h-px w-28 bg-gradient-to-r from-primary/65 to-transparent sm:block" />
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="w-full shrink-0 sm:w-auto">
             <Button
               variant="outline"
               onClick={copyInvitation}
               className={cn(
-                "gap-2 font-display uppercase tracking-wide",
+                "w-full gap-2 font-display uppercase tracking-wide sm:w-auto",
                 mobileOutlineCtaRing,
               )}
             >
@@ -309,6 +326,12 @@ export function EventPage() {
       </Card>
 
       <ParticipantLists participants={participants} />
+
+      <EventDiscussion
+        eventId={event.id}
+        comments={eventComments}
+        onCommentsRefresh={refreshEventComments}
+      />
 
       <Dialog
         open={showCreatedSuccessModal}

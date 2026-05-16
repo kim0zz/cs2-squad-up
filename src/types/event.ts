@@ -27,6 +27,14 @@ export interface ParticipantRow {
   updated_at: string;
 }
 
+export interface EventComment {
+  id: string;
+  event_id: string;
+  nickname: string;
+  body: string;
+  created_at: string;
+}
+
 export interface CreateEventInput {
   title: string;
   starts_at: string;

@@ -62,6 +62,38 @@ export type Database = {
         }
         Relationships: []
       }
+      cs2_event_comments: {
+        Row: {
+          id: string
+          event_id: string
+          nickname: string
+          body: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          event_id: string
+          nickname: string
+          body: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          event_id?: string
+          nickname?: string
+          body?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cs2_event_comments_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       participants: {
         Row: {
           created_at: string
