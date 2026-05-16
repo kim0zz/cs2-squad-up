@@ -12,10 +12,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { PadelDiscussion } from "@/components/padel/PadelDiscussion";
 import { PadelOptionCard } from "@/components/padel/PadelOptionCard";
 import { buildPadelInvitationMessage } from "@/lib/padelInvitationMessage";
 import {
   getPadelGatheringBySlug,
+  getPadelGatheringComments,
   getPadelOptions,
   getPadelVotes,
   upsertPadelVote,
@@ -23,6 +25,7 @@ import {
 import { PADEL_NICKNAME_KEY, sortPadelOptions } from "@/lib/padelRules";
 import type {
   PadelGathering,
+  PadelGatheringComment,
   PadelOption,
   PadelOptionWithVotes,
   PadelVote,
@@ -48,6 +51,7 @@ export function PadelGatheringPage() {
   const [optionsWithVotes, setOptionsWithVotes] = useState<PadelOptionWithVotes[]>([]);
   const [baseOptions, setBaseOptions] = useState<PadelOption[]>([]);
   const [nickname, setNickname] = useState(() => localStorage.getItem(PADEL_NICKNAME_KEY) ?? "");
+  const [gatheringComments, setGatheringComments] = useState<PadelGatheringComment[]>([]);
   const [votingOptionId, setVotingOptionId] = useState<string | null>(null);
 
   const refreshVotes = useCallback(async (_g: PadelGathering, opts: PadelOption[]) => {
@@ -75,9 +79,13 @@ export function PadelGatheringPage() {
           return;
         }
         setGathering(g);
-        const opts = await getPadelOptions(g.id);
+        const [opts, comments] = await Promise.all([
+          getPadelOptions(g.id),
+          getPadelGatheringComments(g.id),
+        ]);
         if (!active) return;
         setBaseOptions(opts);
+        setGatheringComments(comments);
         const votes = await getPadelVotes(opts.map((o) => o.id));
         if (!active) return;
         setOptionsWithVotes(mergeOptionsWithVotes(opts, votes));
@@ -97,17 +105,22 @@ export function PadelGatheringPage() {
 
   useEffect(() => {
     if (phase !== "ready" || !gathering) return;
+    const gatheringId = gathering.id;
     const opts = baseOptions;
     let active = true;
     const tick = async () => {
       try {
-        if (opts.length === 0) {
-          if (!active) return;
+        const optionIds = opts.map((o) => o.id);
+        const [votes, comments] = await Promise.all([
+          optionIds.length === 0 ? Promise.resolve([]) : getPadelVotes(optionIds),
+          getPadelGatheringComments(gatheringId),
+        ]);
+        if (!active) return;
+        setGatheringComments(comments);
+        if (optionIds.length === 0) {
           setOptionsWithVotes([]);
           return;
         }
-        const votes = await getPadelVotes(opts.map((o) => o.id));
-        if (!active) return;
         setOptionsWithVotes(mergeOptionsWithVotes(opts, votes));
       } catch (e) {
         console.error(e);
@@ -121,6 +134,12 @@ export function PadelGatheringPage() {
       window.clearInterval(id);
     };
   }, [phase, gathering?.id, baseOptions]);
+
+  const refreshGatheringComments = useCallback(async () => {
+    if (!gathering) return;
+    const next = await getPadelGatheringComments(gathering.id);
+    setGatheringComments(next);
+  }, [gathering]);
 
   useEffect(() => {
     if (gathering && phase === "ready") {
@@ -263,6 +282,12 @@ export function PadelGatheringPage() {
             />
           ))}
         </div>
+
+        <PadelDiscussion
+          gatheringId={gathering.id}
+          comments={gatheringComments}
+          onCommentsRefresh={refreshGatheringComments}
+        />
       </div>
 
       <Dialog

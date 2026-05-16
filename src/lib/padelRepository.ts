@@ -3,6 +3,7 @@ import { countFits } from "@/lib/padelRules";
 import type {
   CreatePadelGatheringInput,
   PadelGathering,
+  PadelGatheringComment,
   PadelGatheringListItem,
   PadelOption,
   PadelVote,
@@ -92,6 +93,45 @@ export async function getPadelVotes(optionIds: string[]): Promise<PadelVote[]> {
     .order("created_at", { ascending: true });
   if (error) throw error;
   return (data ?? []) as PadelVote[];
+}
+
+export async function getPadelGatheringComments(
+  gatheringId: string,
+): Promise<PadelGatheringComment[]> {
+  const { data, error } = await supabase
+    .from("padel_gathering_comments")
+    .select("*")
+    .eq("gathering_id", gatheringId)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as PadelGatheringComment[];
+}
+
+export async function addPadelGatheringComment(
+  gatheringId: string,
+  nickname: string,
+  body: string,
+): Promise<PadelGatheringComment> {
+  const trimmedNick = nickname.trim();
+  const trimmedBody = body.trim();
+  if (!trimmedNick || trimmedNick.length > 80) {
+    throw new Error("Nickname must be 1–80 characters");
+  }
+  if (!trimmedBody || trimmedBody.length > 1000) {
+    throw new Error("Message must be 1–1000 characters");
+  }
+
+  const { data, error } = await supabase
+    .from("padel_gathering_comments")
+    .insert({
+      gathering_id: gatheringId,
+      nickname: trimmedNick,
+      body: trimmedBody,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return data as PadelGatheringComment;
 }
 
 export async function upsertPadelVote(

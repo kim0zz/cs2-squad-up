@@ -159,6 +159,38 @@ export type Database = {
         }
         Relationships: []
       }
+      padel_gathering_comments: {
+        Row: {
+          id: string
+          gathering_id: string
+          nickname: string
+          body: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          gathering_id: string
+          nickname: string
+          body: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          gathering_id?: string
+          nickname?: string
+          body?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "padel_gathering_comments_gathering_id_fkey"
+            columns: ["gathering_id"]
+            isOneToOne: false
+            referencedRelation: "padel_gatherings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       padel_options: {
         Row: {
           id: string

@@ -30,6 +30,14 @@ export interface PadelVote {
   updated_at: string;
 }
 
+export interface PadelGatheringComment {
+  id: string;
+  gathering_id: string;
+  nickname: string;
+  body: string;
+  created_at: string;
+}
+
 export interface CreatePadelOptionInput {
   venue_name: string;
   starts_at: string;
