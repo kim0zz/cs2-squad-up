@@ -44,15 +44,16 @@ export function buildInvitationMessage({
   const lines = [
     `🎮 ${event.title} — ${modeLabel} ${when}`,
     "",
+    "Zapisz się:",
+    url,
+    "",
     `Grają: ${playingCount}/${event.max_players}`,
     `Brakuje: ${spotsLeftCount}`,
-    "",
   ];
 
   if (event.discord_info?.trim()) {
-    lines.push(`Discord: ${event.discord_info.trim()}`, "");
+    lines.push("", `Discord: ${event.discord_info.trim()}`);
   }
 
-  lines.push("Zapisz się tutaj:", url);
   return lines.join("\n");
 }
