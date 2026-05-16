@@ -143,9 +143,24 @@ export function CreateEventForm() {
             onValueChange={(v) => v && setCsMode(v as CsMode)}
             className="justify-start gap-2"
           >
-            <ToggleGroupItem value="faceit" className="px-4 font-display uppercase border border-lime-400/45 data-[state=on]:bg-lime-500/22 data-[state=on]:text-lime-100 data-[state=on]:border-lime-300/70">Faceit</ToggleGroupItem>
-            <ToggleGroupItem value="premier" className="px-4 font-display uppercase border border-slate-300/40 data-[state=on]:bg-slate-200/20 data-[state=on]:text-slate-50 data-[state=on]:border-slate-200/65">Premier</ToggleGroupItem>
-            <ToggleGroupItem value="mix10" className="px-4 font-display uppercase border border-lime-300/55 data-[state=on]:bg-lime-400/28 data-[state=on]:text-lime-50 data-[state=on]:border-lime-200/75">MIX10</ToggleGroupItem>
+            <ToggleGroupItem
+              value="faceit"
+              className="px-4 font-display uppercase border border-white/10 bg-zinc-900/75 text-muted-foreground shadow-none hover:bg-zinc-800/90 hover:text-muted-foreground focus-visible:ring-1 focus-visible:ring-white/15 data-[state=on]:border-lime-300/70 data-[state=on]:bg-lime-500/22 data-[state=on]:text-lime-100 data-[state=on]:hover:bg-lime-500/22 data-[state=on]:hover:text-lime-100"
+            >
+              Faceit
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="premier"
+              className="px-4 font-display uppercase border border-white/10 bg-zinc-900/75 text-muted-foreground shadow-none hover:bg-zinc-800/90 hover:text-muted-foreground focus-visible:ring-1 focus-visible:ring-white/15 data-[state=on]:border-slate-200/65 data-[state=on]:bg-slate-200/20 data-[state=on]:text-slate-50 data-[state=on]:hover:bg-slate-200/20 data-[state=on]:hover:text-slate-50"
+            >
+              Premier
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="mix10"
+              className="px-4 font-display uppercase border border-white/10 bg-zinc-900/75 text-muted-foreground shadow-none hover:bg-zinc-800/90 hover:text-muted-foreground focus-visible:ring-1 focus-visible:ring-white/15 data-[state=on]:border-lime-200/75 data-[state=on]:bg-lime-400/28 data-[state=on]:text-lime-50 data-[state=on]:hover:bg-lime-400/28 data-[state=on]:hover:text-lime-50"
+            >
+              MIX10
+            </ToggleGroupItem>
           </ToggleGroup>
           <p className="text-sm text-muted-foreground/95">{helperText}</p>
         </div>
